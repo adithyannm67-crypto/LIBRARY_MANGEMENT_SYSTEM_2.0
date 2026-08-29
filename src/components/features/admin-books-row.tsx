@@ -1,0 +1,97 @@
+"use client";
+
+import { useState } from "react";
+import styles from "@/styles/admin-shared.module.css";
+import Button from "@/components/ui/Button";
+import { useRouter } from "next/navigation";
+import type { MockBook } from "@/mock/mock";
+
+const STATUS_CLS: Record<string, string> = {
+  active: "badgeActive",
+  archived: "badgeNeutral",
+  damaged: "badgeDanger",
+};
+
+export default function BookRow({ b }: { b: MockBook }) {
+  const router = useRouter();
+  return (
+    <tr
+      key={b.id}
+      className={styles.clickable}
+      onClick={() => router.push(`/admin/book-details/${b.id}`)}
+    >
+      <td>
+        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+          <div
+            style={{
+              width: 30,
+              height: 40,
+              borderRadius: 4,
+              background: b.coverColor,
+              flexShrink: 0,
+              boxShadow: "inset -2px 0 4px rgba(0,0,0,0.15)",
+            }}
+          />
+          <div>
+            <div
+              style={{
+                fontWeight: 600,
+                maxWidth: 150,
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+                whiteSpace: "nowrap",
+              }}
+            >
+              {b.title}
+            </div>
+            <div
+              style={{
+                fontSize: 11,
+                color: "var(--muted-foreground)",
+              }}
+            >
+              {b.author}
+            </div>
+          </div>
+        </div>
+      </td>
+      <td
+        style={{
+          fontFamily: "monospace",
+          fontSize: 11,
+          color: "var(--muted-foreground)",
+        }}
+      >
+        {b.isbn}
+      </td>
+      <td style={{ color: "var(--muted-foreground)" }}>{b.category}</td>
+      <td>
+        <span style={{ fontWeight: 600 }}>{b.availableCopies}</span>
+        <span style={{ color: "var(--muted-foreground)" }}>
+          /{b.totalCopies}
+        </span>
+      </td>
+      <td style={{ fontWeight: 600 }}>{b.totalBorrows.toLocaleString()}</td>
+      <td>★ {b.rating.toFixed(1)}</td>
+      <td>
+        <span
+          className={`${styles.badge} ${styles[STATUS_CLS[b.status] ?? "badgeNeutral"]}`}
+        >
+          {b.status}
+        </span>
+      </td>
+      <td>
+        <Button
+          variant="ghost"
+          size="xs"
+          onClick={(e) => {
+            e.stopPropagation();
+            router.push(`/admin/book-details/${b.id}`);
+          }}
+        >
+          View
+        </Button>
+      </td>
+    </tr>
+  );
+}

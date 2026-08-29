@@ -1,0 +1,213 @@
+/* ── Auth Layout ─────────────────────────── */
+.root {
+  display: flex;
+  min-height: 100vh;
+  font-family: var(--font-family);
+}
+
+/* ── Left panel (brand) ──────────────────── */
+.brand {
+  width: 420px;
+  flex-shrink: 0;
+  
+  background: var(--foreground);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  padding: 48px;
+  position: relative;
+  overflow: hidden;
+}
+
+.brandPattern {
+  position: absolute;
+  inset: 0;
+  background-image:
+    radial-gradient(circle at 15% 20%, color-mix(in srgb, var(--accent) 25%, transparent) 0%, transparent 55%),
+    radial-gradient(circle at 85% 75%, color-mix(in srgb, var(--accent) 12%, transparent) 0%, transparent 50%);
+  pointer-events: none;
+}
+
+.brandGrid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(color-mix(in srgb, white 5%, transparent) 1px, transparent 1px),
+    linear-gradient(90deg, color-mix(in srgb, white 5%, transparent) 1px, transparent 1px);
+  background-size: 28px 28px;
+  pointer-events: none;
+}
+
+/* Logo */
+.brandLogo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  position: relative;
+  z-index: 1;
+}
+
+.brandLogoMark {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: var(--accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 16px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.brandLogoText {
+  font-size: 18px;
+  font-weight: 700;
+  color: white;
+  letter-spacing: -0.025em;
+}
+
+/* Content */
+.brandContent {
+  position: relative;
+  z-index: 1;
+}
+
+.brandHeadline {
+  font-size: 26px;
+  font-weight: 700;
+  color: white;
+  letter-spacing: -0.03em;
+  line-height: 1.2;
+  margin-bottom: 12px;
+}
+
+.brandAccent { color: var(--accent); }
+
+.brandSub {
+  font-size: 14px;
+  color: color-mix(in srgb, white 60%, transparent);
+  line-height: 1.65;
+  margin-bottom: 36px;
+}
+
+.brandFeatures {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.brandFeature {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.brandFeatureIcon {
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  background: color-mix(in srgb, white 10%, transparent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  flex-shrink: 0;
+}
+
+.brandFeatureText {
+  font-size: 13px;
+  color: color-mix(in srgb, white 80%, transparent);
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+.brandFooter {
+  margin-top: 40px;
+  padding-top: 20px;
+  border-top: 1px solid color-mix(in srgb, white 12%, transparent);
+  font-size: 11px;
+  color: color-mix(in srgb, white 38%, transparent);
+  position: relative;
+  z-index: 1;
+  line-height: 1.5;
+}
+
+/* ── Right panel (form) ──────────────────── */
+.form {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  /* padding: 48px 40px; */
+  background: var(--background);
+  overflow-y: auto;
+  min-height: 100vh;
+}
+
+.formInner {
+  width: 100%;
+  /* max-width: 400px; */
+  animation: fadeUp 200ms ease both;
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Loading overlay ─────────────────────── */
+.loadingOverlay {
+  position: fixed;
+  inset: 0;
+  background: color-mix(in srgb, var(--background) 85%, transparent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 50;
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
+}
+
+/* ── Alert banners ───────────────────────── */
+.errorBanner {
+  padding: 12px 14px;
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--destructive) 7%, transparent);
+  border-left: 3px solid var(--destructive);
+  border-top: 1px solid color-mix(in srgb, var(--destructive) 20%, transparent);
+  border-right: 1px solid color-mix(in srgb, var(--destructive) 20%, transparent);
+  border-bottom: 1px solid color-mix(in srgb, var(--destructive) 20%, transparent);
+  color: var(--destructive);
+  font-size: 13px;
+  line-height: 1.5;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.successBanner {
+  padding: 12px 14px;
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--success) 7%, transparent);
+  border-left: 3px solid var(--success);
+  border-top: 1px solid color-mix(in srgb, var(--success) 20%, transparent);
+  border-right: 1px solid color-mix(in srgb, var(--success) 20%, transparent);
+  border-bottom: 1px solid color-mix(in srgb, var(--success) 20%, transparent);
+  color: var(--success);
+  font-size: 13px;
+  line-height: 1.5;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+@media (max-width: 900px) {
+  .brand { display: none; }
+  .form  { padding: 40px 24px; }
+}

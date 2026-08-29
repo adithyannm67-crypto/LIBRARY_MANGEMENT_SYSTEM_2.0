@@ -1,0 +1,87 @@
+.root {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  box-shadow: var(--shadow-md);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  transition:
+    border-color var(--transition-base, 150ms ease),
+    box-shadow var(--transition-base, 150ms ease),
+    transform 150ms ease;
+  will-change: transform;
+}
+
+.root:hover {
+  border-color: color-mix(in srgb, var(--border) 40%, var(--accent) 60%);
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-2px);
+}
+
+.header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--muted-foreground);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  line-height: 1;
+}
+
+.iconWrap {
+  width: 34px;
+  height: 34px;
+  border-radius: 9px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  background: color-mix(in srgb, var(--accent) 10%, transparent);
+  color: var(--accent);
+}
+.iconWrap.success     { background: color-mix(in srgb, var(--success) 10%, transparent);     color: var(--success); }
+.iconWrap.warning     { background: color-mix(in srgb, var(--warning) 10%, transparent);     color: var(--warning); }
+.iconWrap.destructive { background: color-mix(in srgb, var(--destructive) 10%, transparent); color: var(--destructive); }
+.iconWrap.muted       { background: var(--muted); color: var(--muted-foreground); }
+
+.value {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--foreground);
+  line-height: 1;
+  letter-spacing: -0.035em;
+  font-variant-numeric: tabular-nums;
+}
+.value.sm { font-size: 22px; }
+.value.lg { font-size: 36px; }
+
+.footer {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.trend {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: 5px;
+}
+
+.up        { background: color-mix(in srgb, var(--success) 12%, transparent);     color: var(--success); }
+.down      { background: color-mix(in srgb, var(--destructive) 12%, transparent); color: var(--destructive); }
+.neutral   { background: var(--muted); color: var(--muted-foreground); }
+
+.comparison { font-size: 11px; color: var(--muted-foreground); }

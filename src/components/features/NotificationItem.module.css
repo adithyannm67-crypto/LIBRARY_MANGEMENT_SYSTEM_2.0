@@ -1,0 +1,90 @@
+/* ── Notification item ───────────────────── */
+.item {
+  display: flex;
+  gap: 12px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--card);
+  position: relative;
+  align-items: flex-start;
+  transition:
+    box-shadow var(--transition-fast, 80ms ease),
+    border-color var(--transition-fast, 80ms ease);
+}
+.item:hover {
+  box-shadow: var(--shadow-sm);
+  border-color: color-mix(in srgb, var(--border) 50%, var(--accent) 50%);
+}
+
+.item.unread {
+  border-color: color-mix(in srgb, var(--accent) 22%, transparent);
+  background: color-mix(in srgb, var(--accent) 3%, var(--card));
+}
+
+/* Icon */
+.iconWrap {
+  width: 32px;
+  height: 32px;
+  border-radius: 9px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+/* Content */
+.content { flex: 1; min-width: 0; }
+.title {
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 3px;
+  line-height: 1.4;
+  color: var(--foreground);
+  letter-spacing: -0.01em;
+}
+.body {
+  font-size: 12px;
+  color: var(--muted-foreground);
+  line-height: 1.55;
+}
+.time {
+  font-size: 11px;
+  color: var(--muted-foreground);
+  margin-top: 5px;
+}
+
+/* Controls */
+.controls {
+  display: flex;
+  gap: 4px;
+  flex-shrink: 0;
+}
+.ctrl {
+  width: 26px;
+  height: 26px;
+  border-radius: 6px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  color: var(--muted-foreground);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background var(--transition-fast, 80ms ease), color var(--transition-fast, 80ms ease);
+  outline: none;
+}
+.ctrl:hover { background: var(--muted); color: var(--foreground); }
+.ctrl:focus-visible { outline: 2px solid var(--ring); }
+
+/* Unread dot */
+.dot {
+  position: absolute;
+  top: 13px;
+  left: -4px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--accent);
+  border: 2px solid var(--card);
+}

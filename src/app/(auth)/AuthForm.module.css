@@ -1,0 +1,233 @@
+/* ── Auth form shared styles ─────────────── */
+.signInContainer,.signUpContainer {
+  display: flex;
+  flex-direction: column;
+
+  gap: 12px;
+  background: var(--background);
+  overflow-y: auto
+}
+.header { margin-bottom: 18px; }
+
+.back {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--muted-foreground);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  margin-bottom: 20px;
+  font-family: inherit;
+  transition: color var(--transition-fast, 80ms ease);
+  outline: none;
+}
+.back:hover { color: var(--foreground); }
+
+.title {
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  /* margin-bottom: 5px; */
+  color: var(--foreground);
+  line-height: 1.2;
+}
+
+.subtitle {
+  font-size: 13px;
+  color: var(--muted-foreground);
+  line-height: 1.55;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.submitBtn { margin-top: 4px; }
+
+.divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  /* margin: 20px 0; */
+  color: var(--muted-foreground);
+  font-size: 12px;
+}
+.divider::before,
+.divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+
+.footer {
+  margin-top: 24px;
+  text-align: center;
+  font-size: 13px;
+  color: var(--muted-foreground);
+}
+
+.footerLink {
+  color: var(--accent);
+  font-weight: 600;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  font-size: 13px;
+  font-family: inherit;
+  transition: opacity var(--transition-fast, 80ms ease);
+  outline: none;
+}
+.footerLink:hover { opacity: 0.72; }
+
+.forgotLink {
+  display: block;
+  text-align: right;
+  margin-top: -8px;
+}
+
+/* Password strength */
+.strengthMeter { margin-top: -8px; }
+.strengthBars  { display: flex; gap: 4px; margin-bottom: 4px; }
+.strengthBar {
+  flex: 1;
+  height: 3px;
+  border-radius: 2px;
+  background: var(--border);
+  transition: background 200ms ease;
+}
+.strengthLabel { font-size: 11px; color: var(--muted-foreground); }
+
+/* Checkbox row */
+.checkRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--muted-foreground);
+  cursor: pointer;
+}
+
+/* Success state */
+.successState { text-align: center; padding: 28px 0; }
+.successIcon {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--success) 12%, transparent);
+  color: var(--success);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 20px;
+  border: 1px solid color-mix(in srgb, var(--success) 22%, transparent);
+}
+.successTitle {
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  margin-bottom: 8px;
+}
+.successSub {
+  font-size: 13px;
+  color: var(--muted-foreground);
+  line-height: 1.65;
+  max-width: 320px;
+  margin: 0 auto 24px;
+}
+
+.hint {
+  font-size: 11px;
+  color: var(--muted-foreground);
+  margin-top: 20px;
+  line-height: 1.5;
+  text-align: center;
+}
+.hintLink {
+  color: var(--accent);
+  font-weight: 500;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  font-size: 11px;
+  font-family: inherit;
+}
+
+/* Verify email */
+.emailDisplay {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 6px;
+  background: var(--muted);
+  border: 1px solid var(--border);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--foreground);
+  margin-bottom: 20px;
+  font-family: var(--font-mono);
+}
+
+/* Social auth */
+.socialBtn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 9px 16px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--card);
+  color: var(--foreground);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  font-family: inherit;
+  transition:
+    background var(--transition-fast, 80ms ease),
+    border-color var(--transition-fast, 80ms ease),
+    transform 100ms ease;
+  outline: none;
+}
+.socialBtn:hover {
+  background: var(--muted);
+  border-color: color-mix(in srgb, var(--border) 60%, var(--muted-foreground) 40%);
+  transform: translateY(-1px);
+}
+.socialBtn:active { transform: translateY(0); }
+
+.terms {
+  font-size: 11px;
+  color: var(--muted-foreground);
+  text-align: center;
+  margin-top: 16px;
+  line-height: 1.65;
+}
+.termsLink {
+  color: var(--foreground);
+  font-weight: 500;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  font-size: 11px;
+  font-family: inherit;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}

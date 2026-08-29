@@ -1,0 +1,278 @@
+/* Admin portal layout — shares exact structure with UserLayout */
+
+.root {
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
+  background: var(--background);
+  font-family: var(--font-family);
+}
+
+/* ── Sidebar ──────────────────────────────── */
+.sidebar {
+  width: 240px;
+  flex-shrink: 0;
+  background: var(--card);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  transition: width 260ms cubic-bezier(0.16, 1, 0.3, 1);
+  overflow: hidden;
+  will-change: width;
+}
+.sidebar.collapsed { width: 60px; }
+
+/* Brand */
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 14px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+  min-height: 56px;
+}
+.brandIcon {
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  background: var(--accent);
+  color: #fff;
+  font-weight: 800;
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  letter-spacing: -0.02em;
+}
+.brandText { min-width: 0; overflow: hidden; }
+.brandName {
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  white-space: nowrap;
+  color: var(--foreground);
+}
+.brandRole {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--accent);
+  margin-top: 1px;
+  white-space: nowrap;
+}
+
+/* Nav */
+.nav {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 8px 8px;
+  display: flex;
+  flex-direction: column;
+  scrollbar-width: none;
+}
+.nav::-webkit-scrollbar { display: none; }
+
+.navGroup { padding: 2px 0; }
+.groupLabel {
+  padding: 10px 8px 3px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted-foreground);
+  white-space: nowrap;
+}
+
+.navItem {
+  text-decoration: none;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
+  gap: 9px;
+  padding: 7px 10px;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  background: none;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  color: var(--muted-foreground);
+  text-align: left;
+  transition: background var(--transition-fast, 80ms ease), color var(--transition-fast, 80ms ease);
+  position: relative;
+  white-space: nowrap;
+  outline: none;
+}
+.navItem:hover { background: var(--muted); color: var(--foreground); }
+.navItem:focus-visible { outline: 2px solid var(--ring); outline-offset: -1px; }
+
+.navItem.active {
+  background: color-mix(in srgb, var(--accent) 10%, transparent);
+  color: var(--accent);
+  font-weight: 600;
+}
+.navItem.active::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 5px; bottom: 5px;
+  width: 3px;
+  background: var(--accent);
+  border-radius: 0 3px 3px 0;
+}
+
+.navIcon { display: flex; align-items: center; flex-shrink: 0; }
+.navLabel { flex: 1; overflow: hidden; }
+.navBadge {
+  background: var(--accent);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 1px 6px;
+  border-radius: 10px;
+  min-width: 18px;
+  text-align: center;
+  flex-shrink: 0;
+  margin-left: 8px;
+}
+.navBadgeDot {
+  position: absolute;
+  top: 6px; right: 8px;
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+}
+
+/* User area */
+.userArea {
+  border-top: 1px solid var(--border);
+  padding: 8px;
+  flex-shrink: 0;
+}
+.userCard {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 7px 6px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background var(--transition-fast, 80ms ease);
+}
+.userCard:hover { background: var(--muted); }
+
+.avatar {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--accent) 0%, #818CF8 100%);
+  color: #fff;
+  font-weight: 700;
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  letter-spacing: -0.02em;
+}
+.avatarCenter { margin: 0 auto; }
+
+.userInfo { min-width: 0; overflow: hidden; }
+.userName {
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: var(--foreground);
+}
+.userEmail {
+  font-size: 11px;
+  color: var(--muted-foreground);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ── Main ─────────────────────────────────── */
+.main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+  height: 52px;
+  border-bottom: 1px solid var(--border);
+  background: var(--card);
+  flex-shrink: 0;
+  gap: 12px;
+}
+.topbarLeft  { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.topbarRight { display: flex; align-items: center; gap: 4px; flex-shrink: 0; }
+
+.pageTitle {
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--foreground);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.adminPill {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  padding: 3px 8px;
+  border-radius: 6px;
+  background: color-mix(in srgb, var(--accent) 10%, transparent);
+  color: var(--accent);
+  flex-shrink: 0;
+  border: 1px solid color-mix(in srgb, var(--accent) 20%, transparent);
+}
+
+.collapseBtn,
+.iconBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  color: var(--muted-foreground);
+  transition: background var(--transition-fast, 80ms ease), color var(--transition-fast, 80ms ease);
+  outline: none;
+  flex-shrink: 0;
+  position: relative;
+}
+.collapseBtn:hover,
+.iconBtn:hover { background: var(--muted); color: var(--foreground); }
+.collapseBtn:focus-visible,
+.iconBtn:focus-visible { outline: 2px solid var(--ring); outline-offset: 1px; }
+
+.content {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+}
+.content::-webkit-scrollbar { width: 5px; }
+.content::-webkit-scrollbar-track { background: transparent; }
+.content::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }

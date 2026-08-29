@@ -1,0 +1,100 @@
+.root {
+  background: var(--card);
+  color: var(--card-foreground);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  box-shadow: var(--shadow-md);
+  overflow: hidden;
+  transition: border-color var(--transition-base, 150ms ease), box-shadow var(--transition-base, 150ms ease);
+}
+
+/* Variants */
+.flat { box-shadow: none; border-color: var(--border); }
+
+.elevated { box-shadow: var(--shadow-lg); }
+
+.ghost { background: transparent; border-color: transparent; box-shadow: none; }
+
+.outline { box-shadow: none; }
+
+/* Clickable */
+.clickable {
+  cursor: pointer;
+  transition:
+    border-color var(--transition-base, 150ms ease),
+    box-shadow var(--transition-base, 150ms ease),
+    transform 150ms ease;
+  will-change: transform;
+}
+.clickable:hover {
+  border-color: color-mix(in srgb, var(--border) 50%, var(--accent) 50%);
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-2px);
+}
+.clickable:active {
+  transform: translateY(0) scale(0.995);
+  transition-duration: 60ms;
+}
+.clickable:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}
+
+/* Sub-components */
+.header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 20px 20px 0;
+}
+
+.title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--card-foreground);
+  line-height: 1.3;
+  letter-spacing: -0.01em;
+}
+
+.description {
+  font-size: 13px;
+  color: var(--muted-foreground);
+  line-height: 1.5;
+  margin-top: 2px;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.body { padding: 20px; }
+.body + .footer { padding-top: 0; }
+
+.footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 14px 20px;
+  border-top: 1px solid var(--border);
+  background: color-mix(in srgb, var(--muted) 50%, var(--card) 50%);
+}
+
+.divider { height: 1px; background: var(--border); margin: 0; }
+
+/* Padding overrides */
+.p-sm .header { padding: 14px 14px 0; }
+.p-sm .body   { padding: 14px; }
+.p-sm .footer { padding: 10px 14px; }
+
+.p-lg .header { padding: 28px 28px 0; }
+.p-lg .body   { padding: 28px; }
+.p-lg .footer { padding: 20px 28px; }
+
+.p-none .header,
+.p-none .body,
+.p-none .footer { padding: 0; }
