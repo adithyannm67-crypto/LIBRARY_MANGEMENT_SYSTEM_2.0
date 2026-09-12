@@ -1,5 +1,6 @@
 
-import { ALL_RESERVATIONS, fmtDate } from '@/mock/adminData';
+import { createClient } from '@/lib/server';
+import { fmtDate } from '@/mock/adminData';
 import Button from '@/components/ui/Button';
 import styles from "@/styles/admin-shared.module.css";
 import FilterBar from '@/components/features/admin-filterBar';
@@ -7,7 +8,7 @@ import FilterBar from '@/components/features/admin-filterBar';
 interface Props {
   searchParams: Promise<{
     q?: string;
-    
+
     filter?: string;
   }>;
 }
@@ -16,27 +17,59 @@ interface Props {
 const STATUS_CLS: Record<string,string> = { pending:'badgeWarning', ready:'badgeActive', cancelled:'badgeNeutral', fulfilled:'badgeNeutral' };
 
 export default async function AdminReservationsPage({searchParams}:Props) {
-  
-   const params = await searchParams;
+  const supabase = await createClient();
+  const params = await searchParams;
   const { q, filter } = params;
   const query = q ?? "";
   const status = filter;
 
-  const ready = ALL_RESERVATIONS.filter(r => r.status === 'ready');
+  const { data, error } = await supabase
+    .from('reservations')
+    .select('reservation_id, member_name, book_title, reserved_at, queue_position, total_queue, est_availability, expires_at, status')
+    .order('reserved_at', { ascending: false })
+    .returns<{
+      reservation_id: string;
+      member_name: string;
+      book_title: string;
+      reserved_at: string;
+      queue_position: number;
+      total_queue: number;
+      est_availability: string | null;
+      expires_at: string | null;
+      status: string;
+    }[]>();
 
-  const filtered = ALL_RESERVATIONS.filter(r => {
-    const q = query.toLowerCase();
-    if (q && !r.memberName.toLowerCase().includes(q) && !r.bookTitle.toLowerCase().includes(q)) return false;
-    if (status !== 'All' && r.status !== status) return false;
-    return true;
-  });
+  if (error) console.error(error);
+
+  const rows = (data ?? []).map(r => ({
+    id: r.reservation_id,
+    memberName: r.member_name,
+    bookTitle: r.book_title,
+    reservedAt: r.reserved_at,
+    queuePosition: r.queue_position,
+    totalQueue: r.total_queue,
+    estimatedAvailability: r.est_availability ?? null,
+    expiresAt: r.expires_at ?? null,
+    status: r.status,
+  }));
+
+  const ready = rows.filter(r => r.status === 'ready');
+
+  const filtered = query || status !== 'All'
+    ? rows.filter(r => {
+        const ql = query.toLowerCase();
+        if (ql && !r.memberName.toLowerCase().includes(ql) && !r.bookTitle.toLowerCase().includes(ql)) return false;
+        if (status !== 'All' && r.status !== status) return false;
+        return true;
+      })
+    : rows;
 
   return (
     <div className={styles.page}>
       <div className={styles.pageHeader}>
         <div>
           <h1 className={styles.pageTitle}>Reservations</h1>
-          <p className={styles.pageSub}>{ready.length} ready for pickup · {ALL_RESERVATIONS.filter(r=>r.status==='pending').length} pending</p>
+          <p className={styles.pageSub}>{ready.length} ready for pickup · {rows.filter(r=>r.status==='pending').length} pending</p>
         </div>
       </div>
 
