@@ -1,9 +1,9 @@
 import React from 'react';
 import { Lock } from 'lucide-react';
-import { Achievement } from '../../mock/portalData';
+import { Achievement, UserAchievement } from '@/types/database';
 import styles from './AchievementBadge.module.css';
 
-const RARITY_COLOR = {
+const RARITY_COLOR: Record<string, string> = {
   common: '#71717A',
   rare: '#3B82F6',
   epic: '#8B5CF6',
@@ -11,7 +11,7 @@ const RARITY_COLOR = {
 };
 
 interface BadgeProps {
-  achievement: Achievement;
+  achievement:  UserAchievement;
   size?: 'sm' | 'md' | 'lg';
 }
 
@@ -31,7 +31,7 @@ export function AchievementBadge({ achievement: a, size = 'md' }: BadgeProps) {
   );
 }
 
-interface CardProps { achievement: Achievement; }
+interface CardProps { achievement: UserAchievement; }
 
 export function AchievementCard({ achievement: a }: CardProps) {
   const rarityColor = RARITY_COLOR[a.rarity];
@@ -56,9 +56,9 @@ export function AchievementCard({ achievement: a }: CardProps) {
             <span className={styles.progressLabel}>{a.progress} / {a.target}</span>
           </div>
         )}
-        {a.unlocked && a.unlockedAt && (
+        {a.unlocked && a.unlocked_at && (
           <div className={styles.unlockDate}>
-            Unlocked {new Date(a.unlockedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+            Unlocked {new Date(a.unlocked_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
           </div>
         )}
       </div>

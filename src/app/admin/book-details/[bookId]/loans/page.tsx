@@ -5,8 +5,8 @@ import styles from "@/styles/admin-shared.module.css";
 
 
 
-export default function AdminBookLoansPage({params}:{params:{bookId:string}}) {
-    const bookId = params.bookId;
+export default function AdminBookLoansPage({ params }: { params: { bookId: string } }) {
+  const bookId = params.bookId;
   // TODO: Admin book loans
     const loans = ALL_LOANS.filter((l) => l.bookId === bookId);
   return (

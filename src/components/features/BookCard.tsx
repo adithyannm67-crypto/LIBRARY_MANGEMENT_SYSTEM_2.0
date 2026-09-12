@@ -2,7 +2,7 @@
 import React from "react";
 import { useRouter } from "next/navigation";
 import { Star, BookMarked } from "lucide-react";
-import { Book } from "../../mock/portalData";
+import type { Book } from '@/types/database'
 import Badge from "../ui/Badge";
 import styles from "./BookCard.module.css";
 
@@ -82,11 +82,13 @@ export default function BookCard({ book, actions }: BookCardProps) {
 
 interface BookListCardProps {
   book: Book;
-  onClick?: () => void;
+  
   actions?: React.ReactNode;
 }
 
-export function BookListCard({ book, onClick, actions }: BookListCardProps) {
+export function BookListCard({ book, actions }: BookListCardProps) {
+  const router = useRouter();
+
   const isAvailable = book.availableCopies > 0;
   return (
     <Link href={`/user/books/${book.id}`} style={{  textDecoration: "none", cursor: "pointer" }} className={styles.listCard}>
@@ -112,9 +114,9 @@ export function BookListCard({ book, onClick, actions }: BookListCardProps) {
             </Badge>
           )}
         </div>
-        <div className={styles.listTitle} onClick={onClick}>
+        <Link href={`/user/books/${book.id}`} className={styles.listTitle}>
           {book.title}
-        </div>
+        </Link>
         <div className={styles.author}>by {book.author}</div>
         <div className={styles.row}>
           <div className={styles.stars}>

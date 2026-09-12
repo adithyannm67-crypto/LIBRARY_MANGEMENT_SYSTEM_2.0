@@ -12,8 +12,8 @@ const COND_COLOR: Record<string, string> = {
   lost: "var(--muted-foreground)",
 };
 
-export default function AdminBookInventoryPage({ params }: { params: string }) {
-  const bookId = params;
+export default function AdminBookInventoryPage({ params }: { params: { bookId: string } }) {
+  const bookId = params.bookId;
   const copies = INVENTORY.filter((i) => i.bookId === bookId);
   return (
     <div className={styles.section}>

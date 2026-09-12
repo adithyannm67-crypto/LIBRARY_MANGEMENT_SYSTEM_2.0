@@ -1,12 +1,15 @@
 
 import { Plus } from "lucide-react";
 
-import { ADMIN_BOOKS, ADMIN_CATEGORIES } from "@/mock/adminData";
+import { ADMIN_CATEGORIES } from "@/mock/adminData";
 import Button from "@/components/ui/Button";
 import styles from "@/styles/admin-shared.module.css";
 
 import Filterbar from "@/components/features/admin-filterBar";
 import BookRow from "@/components/features/admin-books-row";
+import { createClient } from '@/lib/server'
+import type { Book } from '@/types/database'
+
 
 interface Props {
   searchParams: Promise<{
@@ -18,6 +21,18 @@ interface Props {
 }
 
 export default async function AdminBooksPage({ searchParams }: Props) {
+  
+   const supabase = await createClient()
+ 
+  // Fetch rows from a table
+  const { data, error } = await supabase
+    .from('books')
+    .select('*')
+    .returns<Book[]>()
+ 
+  if (error) console.error(error)
+ 
+  console.log(data)
   const params = await searchParams;
   const { q, sort, cat, filter } = params;
   const query = q ?? "";
@@ -25,7 +40,9 @@ export default async function AdminBooksPage({ searchParams }: Props) {
 
   const cats = ["All", ...ADMIN_CATEGORIES.map((c) => c.name)];
 
-  const filtered = ADMIN_BOOKS.filter((b) => {
+  const books: Book[] = data ?? [];
+
+  const filtered = books.filter((b) => {
     const q = query.toLowerCase();
     if (
       q &&
@@ -35,14 +52,11 @@ export default async function AdminBooksPage({ searchParams }: Props) {
     )
       return false;
     if (cat !== "All" && b.category !== cat) return false;
-    if (status !== "All" && b.status !== status) return false;
     return true;
-  }).sort((a, b) =>
-    sort === "borrows"
-      ? b.totalBorrows - a.totalBorrows
-      : sort === "rating"
-        ? b.rating - a.rating
-        : a.title.localeCompare(b.title),
+  }  ).sort((a, b) =>
+    sort === "rating"
+      ? b.rating - a.rating
+      : a.title.localeCompare(b.title),
   );
 
   return (
@@ -51,7 +65,7 @@ export default async function AdminBooksPage({ searchParams }: Props) {
         <div>
           <h1 className={styles.pageTitle}>Books</h1>
           <p className={styles.pageSub}>
-            {ADMIN_BOOKS.length} titles in catalog
+            {books.length} titles in catalog
           </p>
         </div>
         <div className={styles.pageActions}>
@@ -73,9 +87,7 @@ export default async function AdminBooksPage({ searchParams }: Props) {
                   "ISBN",
                   "Category",
                   "Copies",
-                  "Borrows",
                   "Rating",
-                  "Status",
                   "",
                 ].map((h) => (
                   <th key={h}>{h}</th>
@@ -84,7 +96,7 @@ export default async function AdminBooksPage({ searchParams }: Props) {
             </thead>
             <tbody>
               {filtered.map((b) => (
-                <BookRow key={b.id} b={b} />
+                <BookRow key={b.book_id} b={b} />
               ))}
             </tbody>
           </table>

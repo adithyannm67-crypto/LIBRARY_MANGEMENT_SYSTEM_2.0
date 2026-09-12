@@ -1,52 +1,64 @@
-"use client";
-import React, { useState } from 'react';
-import Link from 'next/link';
+import { notFound } from 'next/navigation';
+
 import {
   ArrowLeft, Star, BookOpen, Calendar, Globe, Hash, Building,
-  Heart, CalendarClock, BookMarked, Share2, AlertTriangle, CheckCircle,
 } from 'lucide-react';
-import { getBook, BOOKS, LOANS, WISHLIST, fmtDateShort } from '@/mock/portalData';
-import Button from '@/components/ui/Button';
 import Badge from '@/components/ui/Badge';
 import Card from '@/components/ui/Card';
+import Button from '@/components/ui/Button';
 import BookCard from '@/components/features/BookCard';
 import styles from './BookDetailsPage.module.css';
-
-import { useParams } from 'next/navigation';
-
-interface Props { bookId: string;  }
-
-const MOCK_REVIEWS = [
-  { name:'Maya R.', rating:5, text:'An absolute must-read. Dense, practical, and timeless.', date:'Mar 2026' },
-  { name:'James T.', rating:4, text:'Excellent real-world coverage. Some chapters feel dated but core ideas hold.', date:'Jan 2026' },
-  { name:'Priya K.', rating:5, text:'Changed how I approach every coding session. Cannot recommend enough.', date:'Nov 2025' },
-];
+import { createClient } from '@/lib/server';
+import type { Book, Review } from '@/types/database';
+import BookActions from './BookActions';
 
 
-import { useRouter } from 'next/navigation';
+interface Props {
+  params: Promise<{ id: string }>;
+}
 
-export default function BookDetailsPage() {
+export default async function BookDetailsPage({ params }: Props) {
+  const { id } = await params;
+  const supabase = await createClient();
 
-  const router = useRouter();
-  const { id } = useParams<{ id: string }>();
+  // Fetch book
+  const { data: bookUntyped, error } = await supabase
+    .from('books')
+    .select('*')
+    .eq('id', id)
+    .single()
+    
+  const book=bookUntyped as Book
+    
+  if (!book || error) {
+    notFound();
+  }
 
-  const bookId = id
+  // Fetch related books (same category, excluding current)
+  const { data: relatedUntyped } = await supabase
+    .from('books')
+    .select('*')
+    .eq('category', book.category)
+    .neq('id', id)
+    .limit(3)
 
-  const book = getBook(bookId);
-  const [wishlisted, setWishlisted] = useState(() => WISHLIST.some(w => w.bookId === bookId));
-  const [borrowed, setBorrowed] = useState(false);
-  const [reserved, setReserved] = useState(false);
-  const activeLoad = LOANS.find(l => l.bookId === bookId && l.status !== 'returned');
-  const isAvailable = book ? book.availableCopies > 0 : false;
-  const related = book ? BOOKS.filter(b => b.id !== bookId && b.category === book.category).slice(0,3) : [];
+  const related = relatedUntyped as Book[]
 
-  if (!book) throw new Error(`Book with ID ${bookId} not found`);
+  // Fetch reviews for this book
+  const { data: reviewsUntyped } = await supabase
+    .from('reviews')
+    .select('*')
+    .eq('book_id', id)
+    .eq('status', 'published')
+    .order('created_at', { ascending: false })
+    .limit(10)
 
+  const reviews = (reviewsUntyped ?? []) as Review[];
   return (
     <div className={styles.page}>
-      <button onClick={router.back} className={styles.back}>
+      <Button isBackButton className={styles.back}>
         <ArrowLeft size={14}/> Back to catalog
-      </button>
+      </Button>
 
       {/* Hero */}
       <div className={styles.hero}>
@@ -57,8 +69,7 @@ export default function BookDetailsPage() {
         </div>
 
         <div className={styles.info}>
-          <div className={styles.cat}>
-            {typeof book.category === 'string' ? book.category: book.category.name} · {book.subcategory}</div>
+          <div className={styles.cat}>{book.category} · {book.subcategory}</div>
           <h1 className={styles.title}>{book.title}</h1>
           <div className={styles.author}>by {book.author}</div>
 
@@ -68,41 +79,10 @@ export default function BookDetailsPage() {
             <span style={{ fontSize:12, color:'var(--muted-foreground)' }}>({book.reviewCount.toLocaleString()} reviews)</span>
           </div>
 
-          {/* Status */}
-          {activeLoad ? (
-            <div className={`${styles.banner} ${styles.bannerAccent}`}>
-              <CheckCircle size={14}/> You have this checked out · Due {fmtDateShort(activeLoad.dueAt)}
-            </div>
-          ) : borrowed ? (
-            <div className={`${styles.banner} ${styles.bannerSuccess}`}>
-              <CheckCircle size={14}/> Borrowed! Check My Borrows for due date.
-            </div>
-          ) : reserved ? (
-            <div className={`${styles.banner} ${styles.bannerWarning}`}>
-              <CalendarClock size={14}/> Reserved! We'll notify you when ready.
-            </div>
-          ) : (
-            <div className={styles.avail} style={{ color: isAvailable ? 'var(--success)' : 'var(--destructive)' }}>
-              {isAvailable ? `${book.availableCopies} of ${book.totalCopies} copies available` : `All ${book.totalCopies} copies checked out`}
-            </div>
-          )}
+          {/* Interactive actions — only this part is a client component */}
+          <BookActions isAvailable={book.availableCopies > 0} />
 
-          {/* Actions */}
-          {!activeLoad && !borrowed && !reserved && (
-            <div className={styles.actions}>
-              {isAvailable ? (
-                <Button variant="primary" size="lg" leadingIcon={<BookMarked size={15}/>} onClick={() => setBorrowed(true)}>Borrow now</Button>
-              ) : (
-                <Button variant="outline" size="lg" leadingIcon={<CalendarClock size={15}/>} onClick={() => setReserved(true)}>Reserve</Button>
-              )}
-              <Button variant={wishlisted?'accent':'outline'} size="lg" iconOnly onClick={() => setWishlisted(v=>!v)} aria-label="Wishlist">
-                <Heart size={16} fill={wishlisted?'currentColor':'none'}/>
-              </Button>
-              <Button variant="ghost" size="lg" iconOnly aria-label="Share"><Share2 size={16}/></Button>
-            </div>
-          )}
-
-          {/* Metadata */}
+          {/* Metadata — pure server render */}
           <div className={styles.meta}>
             {[
               { icon:<Calendar size={13}/>, label:'Published', value:String(book.publishedYear) },
@@ -123,7 +103,7 @@ export default function BookDetailsPage() {
         </div>
       </div>
 
-      {/* Body */}
+      {/* Body — all server-rendered */}
       <div className={styles.body}>
         <Card>
           <Card.Header><Card.Title>About this book</Card.Title></Card.Header>
@@ -143,29 +123,31 @@ export default function BookDetailsPage() {
             </div>
           </Card.Header>
           <Card.Body style={{ display:'flex', flexDirection:'column', gap:16 }}>
-            {MOCK_REVIEWS.map(r => (
-              <div key={r.name} style={{ paddingBottom:14, borderBottom:'1px solid var(--border)' }}>
+            {reviews.length === 0 ? (
+              <p style={{ fontSize:13, color:'var(--muted-foreground)', textAlign:'center', padding:'16px 0' }}>No reviews yet. Be the first!</p>
+            ) : reviews.map(r => (
+              <div key={r.id} style={{ paddingBottom:14, borderBottom:'1px solid var(--border)' }}>
                 <div style={{ display:'flex', justifyContent:'space-between', marginBottom:6 }}>
                   <div style={{ display:'flex', alignItems:'center', gap:8 }}>
-                    <div style={{ width:28, height:28, borderRadius:'50%', background:'var(--muted)', display:'flex', alignItems:'center', justifyContent:'center', fontSize:11, fontWeight:700 }}>{r.name[0]}</div>
-                    <span style={{ fontSize:13, fontWeight:600 }}>{r.name}</span>
+                    <div style={{ width:28, height:28, borderRadius:'50%', background:'var(--muted)', display:'flex', alignItems:'center', justifyContent:'center', fontSize:11, fontWeight:700 }}>{r.member_name[0]}</div>
+                    <span style={{ fontSize:13, fontWeight:600 }}>{r.member_name}</span>
                   </div>
                   <div style={{ display:'flex', gap:2 }}>
                     {[1,2,3,4,5].map(i => <Star key={i} size={11} fill={i<=r.rating?'#F59E0B':'transparent'} color="#F59E0B"/>)}
                   </div>
                 </div>
-                <p style={{ fontSize:13, color:'var(--muted-foreground)', lineHeight:1.6, margin:'0 0 4px' }}>{r.text}</p>
-                <span style={{ fontSize:11, color:'var(--muted-foreground)' }}>{r.date}</span>
+                <p style={{ fontSize:13, color:'var(--muted-foreground)', lineHeight:1.6, margin:'0 0 4px' }}>{r.content}</p>
+                <span style={{ fontSize:11, color:'var(--muted-foreground)' }}>{new Date(r.created_at).toLocaleDateString('en-US', { month:'short', year:'numeric' })}</span>
               </div>
             ))}
           </Card.Body>
         </Card>
 
-        {related.length > 0 && (
+        {(related ?? []).length > 0 && (
           <div>
-            <div className={styles.relatedTitle}>More in {typeof book.category === 'string' ? book.category: book.category.name}</div>
+            <div className={styles.relatedTitle}>More in {book.category}</div>
             <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill, minmax(180px,1fr))', gap:14 }}>
-              {related.map(b => <BookCard key={b.id} book={b}/>)}
+              {related!.map(b => <BookCard key={b.id} book={b}/>)}
             </div>
           </div>
         )}

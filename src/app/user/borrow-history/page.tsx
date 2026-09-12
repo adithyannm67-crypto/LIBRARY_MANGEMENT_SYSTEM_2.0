@@ -8,12 +8,36 @@ import SearchBar from '@/components/ui/SearchBar2.0';
 import EmptyState from '@/components/ui/EmptyState';
 import styles from '@/styles/user-shared.module.css';
 
+import { createClient } from '@/lib/server';
+import type { BorrowRecord } from '@/types/database';
+
+interface BorrowWithBook extends BorrowRecord {
+  books: { title: string; author: string } | null;
+}
+
 interface Props { searchParams:Promise<{ q?: string; }> }
 
 
 
 
 export default async function BorrowHistoryPage({searchParams}:Props) {
+ const supabase = await createClient()
+
+  const { data, error } = await supabase
+    .from('borrow_records')
+    .select('*, books(title, author)')
+    .eq('member_id', 'm2')
+    
+ 
+  if (error) console.error(error)
+
+
+
+    const borrowHistory: BorrowWithBook[] = data ?? [];
+  const LOAN_HISTORY = borrowHistory
+
+console.log(data?.map(b=>b.id))
+
   const params = await searchParams;
   const { q } = params;
   const query = q ?? "";
@@ -22,11 +46,10 @@ export default async function BorrowHistoryPage({searchParams}:Props) {
 const filtered = (() => {
   if (!query) return LOAN_HISTORY;
   const q = query.toLowerCase();
-  return LOAN_HISTORY.filter(l => {
-    const b = getBook(l.bookId);
+  return LOAN_HISTORY.filter((l) => {
     return (
-      b?.title.toLowerCase().includes(q) ||
-      b?.author.toLowerCase().includes(q)
+      l?.books?.title?.toLowerCase().includes(q) ||
+      l?.books?.author?.toLowerCase().includes(q)
     );
   });
 })();

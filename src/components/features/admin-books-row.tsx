@@ -4,21 +4,15 @@ import { useState } from "react";
 import styles from "@/styles/admin-shared.module.css";
 import Button from "@/components/ui/Button";
 import { useRouter } from "next/navigation";
-import type { MockBook } from "@/mock/mock";
+import type { Book } from "@/types/database";
 
-const STATUS_CLS: Record<string, string> = {
-  active: "badgeActive",
-  archived: "badgeNeutral",
-  damaged: "badgeDanger",
-};
-
-export default function BookRow({ b }: { b: MockBook }) {
+export default function BookRow({ b }: { b: Book }) {
   const router = useRouter();
   return (
     <tr
-      key={b.id}
+      key={b.book_id}
       className={styles.clickable}
-      onClick={() => router.push(`/admin/book-details/${b.id}`)}
+      onClick={() => router.push(`/admin/book-details/${b.book_id}`)}
     >
       <td>
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
@@ -64,29 +58,21 @@ export default function BookRow({ b }: { b: MockBook }) {
       >
         {b.isbn}
       </td>
-      <td style={{ color: "var(--muted-foreground)" }}>{b.category}</td>
+      <td style={{ color: "var(--muted-foreground)" }}>          {b.category}</td>
       <td>
-        <span style={{ fontWeight: 600 }}>{b.availableCopies}</span>
+        <span style={{ fontWeight: 600 }}>{b.available_copies}</span>
         <span style={{ color: "var(--muted-foreground)" }}>
-          /{b.totalCopies}
+          /{b.total_copies}
         </span>
       </td>
-      <td style={{ fontWeight: 600 }}>{b.totalBorrows.toLocaleString()}</td>
       <td>★ {b.rating.toFixed(1)}</td>
-      <td>
-        <span
-          className={`${styles.badge} ${styles[STATUS_CLS[b.status] ?? "badgeNeutral"]}`}
-        >
-          {b.status}
-        </span>
-      </td>
       <td>
         <Button
           variant="ghost"
           size="xs"
           onClick={(e) => {
             e.stopPropagation();
-            router.push(`/admin/book-details/${b.id}`);
+            router.push(`/admin/book-details/${b.book_id}`);
           }}
         >
           View

@@ -7,18 +7,14 @@ export default function AdminBookInfoPage({ book }: { book: AdminBook }) {
   const bookBody = [
     ["ISBN", book.isbn],
     ["Publisher", book.publisher],
-    ["Year", book.publishedYear],
+    ["Year", book.published_year],
     ["Pages", book.pages],
     ["Category", book.category],
-    ["Added", fmtDate(book.addedAt)],
   ];
 
   const bookStats = [
-    ["Total Copies", book.totalCopies],
-    ["Available", book.availableCopies],
-    ["Borrowed", book.borrowedCopies],
-    ["Reserved", book.reservations],
-    ["Lifetime Borrows", book.totalBorrows.toLocaleString()],
+    ["Total Copies", book.total_copies],
+    ["Available", book.available_copies],
     ["Rating", `★ ${book.rating.toFixed(1)}`],
   ];
   return (

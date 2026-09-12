@@ -67,7 +67,7 @@ const LinkComponent = ({ item, collapsed }: LinkComponentProps) => {
       extraUrl = "?filter=All";
       break;
     case "authors":
-      extraUrl = "?sort=borrows";
+      extraUrl = "?sort=rating";
       break;
     case "books":
       extraUrl = "?cat=All&filter=All&sort=borrows";

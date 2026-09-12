@@ -4,7 +4,7 @@ import { useState } from "react";
 import styles from "@/styles/admin-shared.module.css";
 import Button from "@/components/ui/Button";
 
-import { Author } from "@/mock/mock/types";
+import { Author } from "@/types/database";
 
 export default function AutherRow({ a }: { a: Author }) {
   const [expanded, setExpanded] = useState<string | null>(null);
@@ -12,9 +12,9 @@ export default function AutherRow({ a }: { a: Author }) {
     <>
       <tr
         className={styles.clickable}
-        onClick={() => setExpanded(expanded === a.id ? null : a.id)}
+        onClick={() => setExpanded(expanded === a.author_id ? null : a.author_id)}
         style={{
-          background: expanded === a.id ? "var(--muted)" : undefined,
+          background: expanded === a.author_id ? "var(--muted)" : undefined,
         }}
       >
         <td>
@@ -30,7 +30,7 @@ export default function AutherRow({ a }: { a: Author }) {
                 width: 32,
                 height: 32,
                 borderRadius: "50%",
-                background: `hsl(${a.id.charCodeAt(2) * 47}deg 55% 60%)`,
+                background: `hsl(${a.author_id.charCodeAt(2) * 47}deg 55% 60%)`,
                 color: "#fff",
                 fontWeight: 700,
                 fontSize: 12,
@@ -46,8 +46,8 @@ export default function AutherRow({ a }: { a: Author }) {
           </div>
         </td>
         <td style={{ color: "var(--muted-foreground)" }}>{a.nationality}</td>
-        <td style={{ fontWeight: 600 }}>{a.bookCount}</td>
-        <td style={{ fontWeight: 600 }}>{a.borrowCount.toLocaleString()}</td>
+        <td style={{ fontWeight: 600 }}>{a.book_count}</td>
+        {/* <td style={{ fontWeight: 600 }}>{a.borrow_count.toLocaleString()}</td> */}
         <td>★ {a.rating.toFixed(1)}</td>
         <td>
           <Button
@@ -59,7 +59,7 @@ export default function AutherRow({ a }: { a: Author }) {
           </Button>
         </td>
       </tr>
-      {expanded === a.id && (
+      {expanded === a.author_id && (
         <tr>
           <td
             colSpan={6}

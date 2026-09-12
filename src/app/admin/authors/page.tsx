@@ -1,6 +1,5 @@
-import { Plus} from "lucide-react";
+import { Plus } from "lucide-react";
 
-import { AUTHORS } from "@/mock/adminData";
 import Button from "@/components/ui/Button";
 import styles from "@/styles/admin-shared.module.css";
 
@@ -8,13 +7,28 @@ import PageProvider from "@/context/admin-authers-page-context";
 import AutherRow from "@/components/features/admin-authers-row";
 import FilterBar from "@/components/features/admin-filterBar";
 
+import { createClient } from "@/lib/server";
+import type { Author } from "@/types/database";
+
 interface Props {
   searchParams: Promise<{
     q?: string;
     sort?: string;
   }>;
 }
+
 export default async function AuthorsPage({ searchParams }: Props) {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("authors")
+    .select("*")
+    .returns<Author[]>();
+
+  if (error) console.error(error);
+console.log(data);
+  const AUTHORS: Author[] = data ?? [];
+
   const params = await searchParams;
   const { q, sort } = params;
   const query = q ?? "";
@@ -25,11 +39,7 @@ export default async function AuthorsPage({ searchParams }: Props) {
       a.name.toLowerCase().includes(query.toLowerCase()) ||
       a.nationality.toLowerCase().includes(query.toLowerCase()),
   ).sort((a, b) =>
-    sort === "borrows"
-      ? b.borrowCount - a.borrowCount
-      : sort === "rating"
-        ? b.rating - a.rating
-        : a.name.localeCompare(b.name),
+    sort === "rating" ? b.rating - a.rating : a.name.localeCompare(b.name),
   );
 
   return (
@@ -64,7 +74,6 @@ export default async function AuthorsPage({ searchParams }: Props) {
                     "Author",
                     "Nationality",
                     "Books",
-                    "Borrows",
                     "Rating",
                     "",
                   ].map((h) => (
@@ -74,7 +83,7 @@ export default async function AuthorsPage({ searchParams }: Props) {
               </thead>
               <tbody>
                 {filtered.map((a) => (
-                  <AutherRow key={a.id} a={a} />
+                  <AutherRow key={a.author_id} a={a} />
                 ))}
               </tbody>
             </table>

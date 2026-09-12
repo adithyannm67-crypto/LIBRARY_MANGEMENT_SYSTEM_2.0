@@ -94,7 +94,6 @@ export const FILTER_BARS = ({
           type: "select",
           param: "sort",
           options: [
-            { label: "Most Borrowed", value: "borrows" },
             { label: "Highest Rated", value: "rating" },
             { label: "Name A–Z", value: "name" },
           ],

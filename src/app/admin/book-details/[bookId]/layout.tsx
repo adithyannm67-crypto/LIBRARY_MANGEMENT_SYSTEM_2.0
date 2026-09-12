@@ -8,24 +8,18 @@ import Button from "@/components/ui/Button";
 import styles from "@/styles/admin-shared.module.css";
 
 import Link from "next/link";
-import TabPanel from "@/components/layout/admin-book-deatils-tabs";
-
-import { MockBook as AdminBook } from "@/mock/mock";
+import TabPanel from "@/components/layout/admin-book-deatils-tabs";import { MockBook as AdminBook } from "@/mock/mock/types";
 
 interface Props {
   params: { bookId: string };
   children: React.ReactNode;
 }
-
 export default function AdminBookDetailsPage({ params, children }: Props) {
   const bookId = params.bookId;
   const book = getAdminBook(bookId);
 
   const QUICK_STATS = ({ book }: { book: AdminBook }) => {
     return [
-      { l: "Total Borrows", v: book.totalBorrows.toLocaleString() },
-      { l: "Active Borrows", v: book.borrowedCopies },
-      { l: "Reservations", v: book.reservations },
       { l: "Pages", v: book.pages },
     ];
   };
@@ -89,7 +83,7 @@ export default function AdminBookDetailsPage({ params, children }: Props) {
                   margin: "0 0 12px",
                 }}
               >
-                {book.author} · {book.publisher} · {book.publishedYear}
+                {book.author} · {book.publisher} · {book.published_year}
               </p>
               <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
                 <span className={`${styles.badge} ${styles.badgeAccent}`}>
@@ -102,9 +96,9 @@ export default function AdminBookDetailsPage({ params, children }: Props) {
                   {book.isbn}
                 </span>
                 <span
-                  className={`${styles.badge} ${book.availableCopies > 0 ? styles.badgeActive : styles.badgeWarning}`}
+                  className={`${styles.badge} ${book.available_copies > 0 ? styles.badgeActive : styles.badgeWarning}`}
                 >
-                  {book.availableCopies}/{book.totalCopies} available
+                  {book.available_copies}/{book.total_copies} available
                 </span>
                 <span className={`${styles.badge} ${styles.badgeNeutral}`}>
                   ★ {book.rating.toFixed(1)}

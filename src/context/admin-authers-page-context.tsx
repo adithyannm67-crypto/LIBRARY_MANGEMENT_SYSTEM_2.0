@@ -1,16 +1,16 @@
 "use client";
 
-import { Author } from "@/mock/mock/types";
+import { Author } from "@/types/database";
 import { useSearchParams } from "next/navigation";
 
 import React, { createContext, useContext, useMemo, useState } from "react";
 
 interface PageContextType {
   DATA: Author[];
-  searchTerm: string;
-  setSearchTerm: React.Dispatch<React.SetStateAction<string>>;
-  sortBy: string;
-  setSortBy: React.Dispatch<React.SetStateAction<string>>;
+  query: string;
+  setQuery: React.Dispatch<React.SetStateAction<string>>;
+  sort: "name" | "borrows" | "rating";
+  setSort: React.Dispatch<React.SetStateAction<"name" | "borrows" | "rating">>;
 }
 
 const PageContext = createContext<PageContextType | null>(null);
@@ -30,7 +30,6 @@ export default function PageProvider({ children, DATA }: Props) {
 
   const [query, setQuery] = useState(getSearchTermFromUrl());
   const [sort, setSort] = useState<"name" | "borrows" | "rating">("borrows");
-  const [expanded, setExpanded] = useState<string | null>(null);
 
   const filtered = DATA.filter(
     (a) =>

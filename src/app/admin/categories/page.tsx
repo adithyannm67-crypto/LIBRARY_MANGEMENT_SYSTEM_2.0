@@ -1,11 +1,51 @@
 import { Plus, Pencil, Trash2 } from "lucide-react";
 
-import { ADMIN_CATEGORIES } from "@/mock/adminData";
+import { createClient } from "@/lib/server";
 import Button from "@/components/ui/Button";
 import styles from "@/styles/admin-shared.module.css";
 
-export default function CategoriesPage() {
-  const total = ADMIN_CATEGORIES.reduce((s, c) => s + c.bookCount, 0);
+const CAT_COLORS: Record<string, string> = {
+  Engineering: "#6366F1",
+  Algorithms: "#22C55E",
+  Databases: "#9B59B6",
+  JavaScript: "#F59E0B",
+  TypeScript: "#3178C6",
+  Python: "#4B8BBE",
+  Self_Help: "#FF6B35",
+  "Self-Help": "#FF6B35",
+  Psychology: "#F1C40F",
+  Business: "#1ABC9C",
+  Finance: "#27AE60",
+  History: "#E74C3C",
+  Science: "#2980B9",
+  Fiction: "#8E44AD",
+};
+
+export default async function CategoriesPage() {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("categories")
+    .select("category_id, name, description, book_count")
+    .order("name")
+    .returns<{
+      category_id: string;
+      name: string;
+      description: string | null;
+      book_count: number | null;
+    }[]>();
+
+  if (error) console.error(error);
+
+  const categories = (data ?? []).map((row) => ({
+    id: row.category_id,
+    name: row.name,
+    description: row.description ?? "",
+    bookCount: row.book_count ?? 0,
+    color: CAT_COLORS[row.name] ?? "#6B7280",
+  }));
+
+  const total = categories.reduce((s, c) => s + c.bookCount, 0);
 
   return (
     <div className={styles.page}>
@@ -13,7 +53,7 @@ export default function CategoriesPage() {
         <div>
           <h1 className={styles.pageTitle}>Categories</h1>
           <p className={styles.pageSub}>
-            {ADMIN_CATEGORIES.length} categories · {total} books total
+            {categories.length} categories · {total} books total
           </p>
         </div>
         <div className={styles.pageActions}>
@@ -32,7 +72,7 @@ export default function CategoriesPage() {
           marginBottom: 24,
         }}
       >
-        {ADMIN_CATEGORIES.map((cat) => (
+        {categories.map((cat) => (
           <div
             key={cat.id}
             className={styles.section}
@@ -189,7 +229,7 @@ export default function CategoriesPage() {
               </tr>
             </thead>
             <tbody>
-              {ADMIN_CATEGORIES.map((cat) => (
+              {categories.map((cat) => (
                 <tr key={cat.id}>
                   <td>
                     <div
@@ -231,10 +271,3 @@ export default function CategoriesPage() {
     </div>
   );
 }
-
-// export function CategoriesLoading() {
-//   return <div className={styles.page}><div className={styles.skeleton}/></div>;
-// }
-// export function CategoriesError({ onRetry }: { onRetry: () => void }) {
-//   return <div className={styles.page}><div className={styles.errorState}><AlertTriangle size={28} color="var(--destructive)"/><button onClick={onRetry} style={{fontSize:13,cursor:'pointer',background:'none',border:'1px solid var(--border)',borderRadius:6,padding:'6px 14px',fontFamily:'inherit'}}>Retry</button></div></div>;
-// }

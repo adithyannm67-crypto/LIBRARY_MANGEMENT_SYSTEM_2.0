@@ -1,11 +1,12 @@
 import { AlertTriangle, Plus, } from "lucide-react";
 
-import { MEMBERS } from "@/mock/adminData";
 import Button from "@/components/ui/Button";
 import styles from "@/styles/admin-shared.module.css";
 
 import MemberRow from "@/components/features/admin-member-row";
 import Filterbar from "@/components/features/admin-filterBar";
+import { createClient } from '@/lib/server';
+import type { Member } from '@/types/database';
 
 interface Props {
   searchParams: Promise<{
@@ -16,6 +17,17 @@ interface Props {
 }
 
 export default async function Page({ searchParams }: Props) {
+  const supabase = await createClient();
+  
+  const { data, error } = await supabase
+    .from('members')
+    .select('*')
+    .returns<Member[]>();
+  
+  if (error) console.error(error);
+  
+  const MEMBERS: Member[] = data ?? [];
+  
   const params = await searchParams;
   const { q, tier, filter } = params;
   const query = q ?? "";
@@ -133,7 +145,7 @@ export default async function Page({ searchParams }: Props) {
             </thead>
             <tbody>
               {filtered.map((m) => (
-                <MemberRow key={m.id} m={m} />
+                <MemberRow key={m.member_id} m={m} />
               ))}
             </tbody>
           </table>
