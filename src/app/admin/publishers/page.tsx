@@ -1,5 +1,5 @@
 import { Plus, ExternalLink, Pencil } from "lucide-react";
-import { PUBLISHERS } from "@/mock/adminData";
+import { createClient } from "@/lib/server";
 import Button from "@/components/ui/Button";
 import styles from "@/styles/admin-shared.module.css";
 import FilterBar from "@/components/features/admin-filterBar";
@@ -11,16 +11,44 @@ interface Props {
 }
 
 export default async function PublishersPage({ searchParams }: Props) {
+  const supabase = await createClient();
   const params = await searchParams;
   const { q } = params;
   const query = q ?? "";
 
-  const filtered = PUBLISHERS.filter(
-    (p) =>
-      !query ||
-      p.name.toLowerCase().includes(query.toLowerCase()) ||
-      p.country.toLowerCase().includes(query.toLowerCase()),
-  );
+  const { data, error } = await supabase
+    .from("publishers")
+    .select("publisher_id, name, country, books_in_library, founded, website, contact_email")
+    .order("name")
+    .returns<{
+      publisher_id: string;
+      name: string;
+      country: string | null;
+      books_in_library: number | null;
+      founded: number | null;
+      website: string | null;
+      contact_email: string | null;
+    }[]>();
+
+  if (error) console.error(error);
+
+  const publishers = (data ?? []).map((p) => ({
+    id: p.publisher_id,
+    name: p.name,
+    country: p.country ?? "USA",
+    bookCount: p.books_in_library ?? 0,
+    founded: p.founded ?? undefined,
+    website: p.website ?? undefined,
+    contactEmail: p.contact_email ?? undefined,
+  }));
+
+  const filtered = query
+    ? publishers.filter(
+        (p) =>
+          p.name.toLowerCase().includes(query.toLowerCase()) ||
+          p.country.toLowerCase().includes(query.toLowerCase()),
+      )
+    : publishers;
 
   return (
     <div className={styles.page}>
@@ -28,7 +56,7 @@ export default async function PublishersPage({ searchParams }: Props) {
         <div>
           <h1 className={styles.pageTitle}>Publishers</h1>
           <p className={styles.pageSub}>
-            {PUBLISHERS.length} publishers in catalog
+            {publishers.length} publishers in catalog
           </p>
         </div>
         <div className={styles.pageActions}>
@@ -146,9 +174,7 @@ export default async function PublishersPage({ searchParams }: Props) {
                     </div>
                   )}
                   {p.contactEmail && (
-                    <div
-                      style={{ fontSize: 12, color: "var(--muted-foreground)" }}
-                    >
+                    <div style={{ fontSize: 12, color: "var(--muted-foreground)" }} >
                       {p.contactEmail}
                     </div>
                   )}
