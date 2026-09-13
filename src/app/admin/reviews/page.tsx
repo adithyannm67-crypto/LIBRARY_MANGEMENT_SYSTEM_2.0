@@ -82,7 +82,7 @@ export default async function ReviewsPage({searchParams}:Props) {
             )}
           </div>
         ))}
-        {filtered.length === 0 && <p style={{ textAlign:'center', padding:'32px', fontSize:13, color:'var(--muted-foreground)', margin:0 }}>No reviews in this filter.</p>}
+        {filtered.length === 0 && <p className={styles.emptyState}>No reviews in this filter.</p>}
       </div>
     </div>
   );

@@ -113,22 +113,13 @@ export default async function BorrowManagementPage({ searchParams }: Props) {
       {overdue.length > 0 && (
         <div className={styles.alertDanger}>
           <AlertTriangle size={15} color="var(--destructive)" />
-          <span style={{ flex: 1 }}>
+          <span className="flex-1">
             <strong>{overdue.length} loans overdue</strong> — $
             {totalFines.toFixed(2)} total fines accrued
           </span>
           <Link
             href={"?filter=overdue"}
-            style={{
-              textDecoration: "none",
-              fontSize: 12,
-              fontWeight: 600,
-              color: "var(--destructive)",
-              background: "none",
-              border: "none",
-              cursor: "pointer",
-              fontFamily: "inherit",
-            }}
+            className="cursor-pointer font-inherit text-xs font-semibold text-destructive no-underline"
           >
             Show only →
           </Link>
@@ -159,57 +150,44 @@ export default async function BorrowManagementPage({ searchParams }: Props) {
               {filtered.map((l) => (
                 <tr key={l.id}>
                   <td>
-                    <div style={{ fontWeight: 600 }}>{l.memberName}</div>
-                    <div
-                      style={{ fontSize: 11, color: "var(--muted-foreground)" }}
-                    >
+                    <div className="font-semibold">{l.memberName}</div>
+                    <div className="text-[11px] text-muted-foreground">
                       {l.memberEmail}
                     </div>
                   </td>
                   <td>
-                    <div
-                      style={{
-                        maxWidth: 180,
-                        overflow: "hidden",
-                        textOverflow: "ellipsis",
-                        whiteSpace: "nowrap",
-                        fontWeight: 500,
-                      }}
+                    <Link
+                      href={`/admin/book-details/${l.bookId}`}
+                      className="block max-w-[180px] truncate font-medium text-inherit no-underline"
                     >
                       {l.bookTitle}
-                    </div>
-                    <div
-                      style={{ fontSize: 11, color: "var(--muted-foreground)" }}
-                    >
+                    </Link>
+                    <div className="text-[11px] text-muted-foreground">
                       {l.bookAuthor}
                     </div>
                   </td>
-                  <td style={{ color: "var(--muted-foreground)" }}>
+                  <td className="text-muted-foreground">
                     {fmtDate(l.borrowedAt)}
                   </td>
                   <td
-                    style={{
-                      color:
-                        l.status === "overdue"
-                          ? "var(--destructive)"
-                          : "var(--muted-foreground)",
-                      fontWeight: l.status === "overdue" ? 700 : 400,
-                    }}
+                    className={
+                      l.status === "overdue"
+                        ? "font-bold text-destructive"
+                        : "text-muted-foreground"
+                    }
                   >
                     {fmtDate(l.dueAt)}
                   </td>
-                  <td style={{ color: "var(--muted-foreground)" }}>
+                  <td className="text-muted-foreground">
                     {l.renewCount}×
                   </td>
                   <td>
                     {l.fine && l.fine > 0 ? (
-                      <span
-                        style={{ color: "var(--destructive)", fontWeight: 700 }}
-                      >
+                      <span className="font-bold text-destructive">
                         ${l.fine.toFixed(2)}
                       </span>
                     ) : (
-                      <span style={{ color: "var(--muted-foreground)" }}>
+                      <span className="text-muted-foreground">
                         —
                       </span>
                     )}
@@ -222,7 +200,7 @@ export default async function BorrowManagementPage({ searchParams }: Props) {
                     </span>
                   </td>
                   <td>
-                    <div style={{ display: "flex", gap: 4 }}>
+                    <div className="flex gap-1">
                       {l.status !== "returned" && (
                         <Button variant="outline" size="xs">
                           Return
@@ -240,15 +218,7 @@ export default async function BorrowManagementPage({ searchParams }: Props) {
             </tbody>
           </table>
           {filtered.length === 0 && (
-            <p
-              style={{
-                textAlign: "center",
-                padding: "32px",
-                fontSize: 13,
-                color: "var(--muted-foreground)",
-                margin: 0,
-              }}
-            >
+            <p className={styles.emptyState}>
               No loans match.
             </p>
           )}

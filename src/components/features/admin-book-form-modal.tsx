@@ -1,16 +1,19 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { X } from "lucide-react";
 import Button from "@/components/ui/Button";
 import type { Book } from "@/types/database";
 import { createClient } from "@/lib/client";
+import { searchParamsFrom } from "@/lib/utils";
 
 interface BookFormModalProps {
   book?: Book;
   existingBooks?: Book[];
-  onClose: () => void;
-  onSaved: () => void;
+  params?: Record<string, string | undefined>;
+  onClose?: () => void;
+  onSaved?: () => void;
 }
 
 type FormData = {
@@ -246,12 +249,27 @@ function FieldError({ msg }: { msg?: string }) {
   return <div style={errorTextStyle}>{msg}</div>;
 }
 
-export default function BookFormModal({ book, existingBooks, onClose, onSaved }: BookFormModalProps) {
+export default function BookFormModal({ book, existingBooks, params, onClose, onSaved }: BookFormModalProps) {
+  const router = useRouter();
   const [form, setForm] = useState(book ? initialForm(book) : emptyForm());
   const [errors, setErrors] = useState<FormErrors>({});
   const [saving, setSaving] = useState(false);
 
   const isEdit = !!book;
+
+  const clearParam = (param: string) => {
+    const p = searchParamsFrom(params ?? {});
+    p.delete(param);
+    router.replace(`?${p.toString()}`);
+  };
+  const handleClose = () => {
+    if (params) clearParam("edit");
+    else onClose?.();
+  };
+  const handleSaved = () => {
+    if (params) clearParam("edit");
+    else onSaved?.();
+  };
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>,
@@ -308,7 +326,7 @@ export default function BookFormModal({ book, existingBooks, onClose, onSaved }:
         return a !== b;
       });
       if (!changed) {
-        onClose();
+        handleClose();
         return;
       }
     }
@@ -330,7 +348,7 @@ export default function BookFormModal({ book, existingBooks, onClose, onSaved }:
       } else if (error) {
         throw error;
       }
-      onSaved();
+      handleSaved();
     } catch (err) {
       console.error("Failed to save book:", err);
       alert(isEdit ? "Failed to save book changes." : "Failed to add book.");
@@ -395,7 +413,7 @@ export default function BookFormModal({ book, existingBooks, onClose, onSaved }:
         animation: "fadeUp 150ms ease both",
       }}
       onClick={(e) => {
-        if (e.target === e.currentTarget) onClose();
+        if (e.target === e.currentTarget) handleClose();
       }}
     >
       <div
@@ -424,7 +442,7 @@ export default function BookFormModal({ book, existingBooks, onClose, onSaved }:
             {isEdit ? "Edit Book" : "Add Book"}
           </h2>
           <button
-            onClick={onClose}
+            onClick={handleClose}
             style={{
               width: 30,
               height: 30,
@@ -732,7 +750,7 @@ export default function BookFormModal({ book, existingBooks, onClose, onSaved }:
           </div>
           {/* Actions */}
           <div style={{ display: "flex", justifyContent: "flex-end", gap: 8, paddingTop: 8 }}>
-            <Button variant="outline" size="sm" onClick={onClose}>
+            <Button variant="outline" size="sm" onClick={handleClose}>
               Cancel
             </Button>
             <Button variant="primary" size="sm" loading={saving} onClick={handleSave}>

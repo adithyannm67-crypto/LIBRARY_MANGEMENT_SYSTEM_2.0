@@ -1,19 +1,33 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Trash2, X } from "lucide-react";
 import Button from "@/components/ui/Button";
 import type { Book } from "@/types/database";
 import { createClient } from "@/lib/client";
+import { searchParamsFrom } from "@/lib/utils";
 
 interface DeleteBookModalProps {
   book: Book;
-  onClose: () => void;
-  onDeleted: () => void;
+  params?: Record<string, string | undefined>;
+  onClose?: () => void;
+  onDeleted?: () => void;
 }
 
-export default function DeleteBookModal({ book, onClose, onDeleted }: DeleteBookModalProps) {
+export default function DeleteBookModal({ book, params, onClose, onDeleted }: DeleteBookModalProps) {
+  const router = useRouter();
   const [deleting, setDeleting] = useState(false);
+
+  const clearParam = (param: string) => {
+    const p = searchParamsFrom(params ?? {});
+    p.delete(param);
+    router.replace(`?${p.toString()}`);
+  };
+  const close = () => {
+    if (params) clearParam("delete");
+    else onClose?.();
+  };
 
   const handleDelete = async () => {
     setDeleting(true);
@@ -21,7 +35,8 @@ export default function DeleteBookModal({ book, onClose, onDeleted }: DeleteBook
       const supabase = createClient();
       const { error } = await supabase.rpc("delete_book", { p_book_id: book.book_id });
       if (error) throw error;
-      onDeleted();
+      if (params) clearParam("delete");
+      else onDeleted?.();
     } catch (err) {
       console.error("Failed to delete book:", err);
       alert("Failed to delete book.");
@@ -45,7 +60,7 @@ export default function DeleteBookModal({ book, onClose, onDeleted }: DeleteBook
         animation: "fadeUp 150ms ease both",
       }}
       onClick={(e) => {
-        if (e.target === e.currentTarget) onClose();
+        if (e.target === e.currentTarget) close();
       }}
     >
       <div
@@ -72,7 +87,7 @@ export default function DeleteBookModal({ book, onClose, onDeleted }: DeleteBook
             Delete Book
           </h2>
           <button
-            onClick={onClose}
+            onClick={close}
             style={{
               width: 30,
               height: 30,
@@ -107,7 +122,7 @@ export default function DeleteBookModal({ book, onClose, onDeleted }: DeleteBook
             padding: "0 20px 20px",
           }}
         >
-          <Button variant="outline" size="sm" onClick={onClose}>
+          <Button variant="outline" size="sm" onClick={close}>
             Cancel
           </Button>
           <Button

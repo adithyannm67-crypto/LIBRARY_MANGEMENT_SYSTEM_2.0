@@ -10,15 +10,7 @@ export default function AdminBookDetailsError({ onRetry }: { onRetry: () => void
         <AlertTriangle size={28} color="var(--destructive)" />
         <button
           onClick={onRetry}
-          style={{
-            fontSize: 13,
-            cursor: "pointer",
-            background: "none",
-            border: "1px solid var(--border)",
-            borderRadius: 6,
-            padding: "6px 14px",
-            fontFamily: "inherit",
-          }}
+          className="cursor-pointer rounded-md border border-border bg-transparent px-3.5 py-1.5 font-inherit text-[13px]"
         >
           Retry
         </button>

@@ -1,67 +1,42 @@
-
-
 import type { Book } from "@/types/database";
 import RowActions from "./admin-book-row-actions";
 
-export default function BookRow({
-  b,
-  onEdit,
-  onDelete,
-}: {
+interface Props {
   b: Book;
-  onEdit: (book: Book) => void;
-  onDelete: (book: Book) => void;
-}) {
-  
+  params: Record<string, string | undefined>;
+}
+
+export default function BookRow({ b, params }: Props) {
   return (
-    <tr key={b.book_id} >
+    <tr>
       <td>
-        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+        <div className="flex items-center gap-2.5">
           <div
-            style={{
-              width: 30,
-              height: 40,
-              borderRadius: 4,
-              background: b.coverColor,
-              flexShrink: 0,
-              boxShadow: "inset -2px 0 4px rgba(0,0,0,0.15)",
-            }}
+            className="h-10 w-[30px] shrink-0 rounded shadow-[inset_-2px_0_4px_rgba(0,0,0,0.15)]"
+            style={{ background: b.coverColor }}
           />
           <div>
-            <div
-              style={{
-                fontWeight: 600,
-                maxWidth: 150,
-                overflow: "hidden",
-                textOverflow: "ellipsis",
-                whiteSpace: "nowrap",
-              }}
-            >
+            <div className="max-w-[150px] truncate font-semibold">
               {b.title}
             </div>
-            <div style={{ fontSize: 11, color: "var(--muted-foreground)", }} > {b.author} </div>
+            <div className="text-[11px] text-muted-foreground">
+              {" "}
+              {b.author}{" "}
+            </div>
           </div>
         </div>
       </td>
-      <td
-        style={{
-          fontFamily: "monospace",
-          fontSize: 11,
-          color: "var(--muted-foreground)",
-        }}
-      >
+      <td className="font-mono text-[11px] text-muted-foreground">
         {b.isbn}
       </td>
-      <td style={{ color: "var(--muted-foreground)" }}>          {b.category}</td>
+      <td className="text-muted-foreground"> {b.category}</td>
       <td>
-        <span style={{ fontWeight: 600 }}>{b.available_copies}</span>
-        <span style={{ color: "var(--muted-foreground)" }}>
-          /{b.total_copies}
-        </span>
+        <span className="font-semibold">{b.available_copies}</span>
+        <span className="text-muted-foreground">/{b.total_copies}</span>
       </td>
       <td>★ {b.rating.toFixed(1)}</td>
       <td>
-        <RowActions b={b} onEdit={onEdit} onDelete={onDelete} />
+        <RowActions b={b} params={params} />
       </td>
     </tr>
   );

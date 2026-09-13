@@ -117,7 +117,7 @@ export default async function InventoryPage({searchParams}:Props) {
               ))}
             </tbody>
           </table>
-          {filtered.length === 0 && <p style={{ textAlign:'center', padding:'32px', fontSize:13, color:'var(--muted-foreground)', margin:0 }}>No copies match.</p>}
+          {filtered.length === 0 && <p className={styles.emptyState}>No copies match.</p>}
         </div>
       </div>
     </div>

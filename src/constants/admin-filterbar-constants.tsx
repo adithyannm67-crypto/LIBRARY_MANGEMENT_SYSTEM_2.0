@@ -44,9 +44,6 @@ export interface FilterBarConfig {
   fields: FilterField[];
 }
 
-/** Convenience helper for options whose label and URL value are identical. */
-const opt = (value: string): FilterOption => ({ label: value, value });
-
 export const FILTER_BARS = ({
   cats,
 }: {
@@ -63,22 +60,16 @@ export const FILTER_BARS = ({
         },
         {
           type: "select",
-          param: "cat",
-          options: cats ?? [""],
-        },
-        {
-          type: "select",
-          param: "filter",
-          options: ["All", "active", "archived", "damaged"],
-        },
-        {
-          type: "select",
           param: "sort",
           options: [
-            { label: "Most Borrowed", value: "borrows" },
             { label: "Highest Rated", value: "rating" },
             { label: "Title A–Z", value: "title" },
           ],
+        },
+        {
+          type: "select",
+          param: "cat",
+          options: cats ?? [""],
         },
       ],
     },

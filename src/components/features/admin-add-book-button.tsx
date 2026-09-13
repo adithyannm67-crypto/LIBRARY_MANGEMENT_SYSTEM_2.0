@@ -5,8 +5,10 @@ import { Plus } from "lucide-react";
 import Button from "@/components/ui/Button";
 import BookFormModal from "@/components/features/admin-book-form-modal";
 import type { Book } from "@/types/database";
+import { useRouter } from "next/navigation";
 
 export default function AddBookButton({ books }: { books: Book[] }) {
+  const router = useRouter();
   const [open, setOpen] = useState(false);
 
   return (
@@ -25,7 +27,7 @@ export default function AddBookButton({ books }: { books: Book[] }) {
           onClose={() => setOpen(false)}
           onSaved={() => {
             setOpen(false);
-            window.location.reload();
+            router.refresh();
           }}
         />
       )}

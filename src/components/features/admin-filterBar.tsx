@@ -27,6 +27,7 @@ export default function Filterbar({ cats }: Props) {
   };
 
   const tabFields = fields.find((field) => field.type === "tabs") ?? null;
+  const status = tabFields ? params.get(tabFields.param) ?? "" : "";
 
   return (
     <div className={styles.filterBar}>

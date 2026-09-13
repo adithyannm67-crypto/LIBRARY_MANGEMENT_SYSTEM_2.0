@@ -6,5 +6,5 @@ interface Props {
 
 export default async function AdminBookDetailsPage({ params }: Props) {
   const { bookId } = await params;
-  redirect(`/admin/books/${bookId}/info`);
+  redirect(`/admin/book-details/${bookId}/info`);
 }

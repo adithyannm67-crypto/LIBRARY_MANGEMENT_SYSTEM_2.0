@@ -88,15 +88,7 @@ console.log(data);
               </tbody>
             </table>
             {filtered.length === 0 && (
-              <p
-                style={{
-                  textAlign: "center",
-                  padding: "32px",
-                  fontSize: 13,
-                  color: "var(--muted-foreground)",
-                  margin: 0,
-                }}
-              >
+              <p className={styles.emptyState}>
                 No authors match.
               </p>
             )}
