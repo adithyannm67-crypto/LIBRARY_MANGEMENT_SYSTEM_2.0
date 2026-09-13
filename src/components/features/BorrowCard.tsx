@@ -6,9 +6,20 @@ import Badge from '../ui/Badge';
 import styles from './BorrowCard.module.css';
 
 import Link from 'next/link';
+import type { BorrowRecord } from '@/types/database';
+
+type BorrowLoan = Loan | BorrowRecord;
+
+function getBookId(loan: BorrowLoan): string {
+  return 'bookId' in loan ? loan.bookId : loan.book_id;
+}
+
+function getBorrowStatus(loan: BorrowLoan): string {
+  return 'status' in loan ? loan.status : loan.borrowrecord_status;
+}
 
 interface BorrowCardProps {
-  loan: Loan;
+  loan: BorrowLoan;
   onReturn?: (id: string) => void;
   onRenew?: (id: string) => void;
 
@@ -16,10 +27,10 @@ interface BorrowCardProps {
 }
 
 export default function BorrowCard({ loan, onReturn, onRenew, compact }: BorrowCardProps) {
-  const book = getBook(loan.bookId);
+  const book = getBook(getBookId(loan));
   if (!book) return null;
 
-  const isOverdue = loan.status === 'overdue';
+  const isOverdue = getBorrowStatus(loan) === 'overdue';
   const days = daysUntil(loan.dueAt);
   const canRenew = loan.renewCount < loan.maxRenews;
 
@@ -68,12 +79,12 @@ export default function BorrowCard({ loan, onReturn, onRenew, compact }: BorrowC
 }
 
 interface BorrowHistoryRowProps {
-  loan: Loan;
+  loan: BorrowLoan;
   
 }
 
 export function BorrowHistoryRow({ loan, }: BorrowHistoryRowProps) {
-  const book = getBook(loan.bookId);
+  const book = getBook(getBookId(loan));
   if (!book) return null;
 
   const onTime = loan.returnedAt && new Date(loan.returnedAt) <= new Date(loan.dueAt);

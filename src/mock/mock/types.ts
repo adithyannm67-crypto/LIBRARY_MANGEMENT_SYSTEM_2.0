@@ -15,30 +15,24 @@ export type InventoryStatus = 'available' | 'borrowed' | 'reserved' | 'maintenan
 
 export interface MockBook {
   id: string;
+  book_id: string;
   title: string;
   author: string;
   isbn: string;
   category: string|Category;
   subcategory: string;
   description: string;
-  coverColor: string;
-  coverAccent: string;
   publisher: string;
-  publishedYear: number;
+  published_year: number;
   pages: number;
   language: string;
   rating: number;
-  reviewCount: number;
-  totalCopies: number;
-  availableCopies: number;
-  borrowedCopies: number;
-  reservations: number;
-  totalBorrows: number;
-  status: BookStatus;
-  tags: string[];
-  isNew?: boolean;
-  isBestseller?: boolean;
-  addedAt: string;
+  review_count: number;
+  total_copies: number;
+  available_copies: number;
+  tags: string;
+  is_new?: boolean;
+  is_bestseller?: boolean;
 }
 
 export interface MockMember {

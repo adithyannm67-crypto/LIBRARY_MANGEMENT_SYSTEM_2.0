@@ -22,6 +22,7 @@ export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElemen
   trailingIcon?: React.ReactNode;
   as?: React.ElementType;
   navigateTo?: string|`/user/${UserRoute}?${string}` | `/admin/${AdminRoute}${string}`;
+  isBackButton?: boolean
 }
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(({
@@ -37,6 +38,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(({
   disabled,
   as: Tag = 'button',
   navigateTo,
+  isBackButton,
   ...props
 }, ref) => {
   const router = useRouter();
@@ -53,7 +55,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(({
         iconOnly && styles.iconOnly,
         className,
       )}
-      onClick={() => navigateTo && router.push(navigateTo)}
+      onClick={() => (navigateTo && router.push(navigateTo))||(isBackButton && router.back())}
       
       {...props}
     >

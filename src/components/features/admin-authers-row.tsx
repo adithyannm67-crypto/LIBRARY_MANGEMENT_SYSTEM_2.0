@@ -1,21 +1,29 @@
 "use client";
-
 import { useState } from "react";
+
 import styles from "@/styles/admin-shared.module.css";
-import Button from "@/components/ui/Button";
 
-import { Author } from "@/mock/mock/types";
 
-export default function AutherRow({ a }: { a: Author }) {
+import { Author } from "@/types/database";
+import RowActions from "./admin-authers-row-actions";
+
+export default function AuthorRow({
+  a,
+  
+  params,
+}: {
+  a: Author;
+  params: URLSearchParams;
+}) {
+
+ 
   const [expanded, setExpanded] = useState<string | null>(null);
   return (
     <>
       <tr
         className={styles.clickable}
-        onClick={() => setExpanded(expanded === a.id ? null : a.id)}
-        style={{
-          background: expanded === a.id ? "var(--muted)" : undefined,
-        }}
+        onClick={() => setExpanded(expanded === a.author_id ? null : a.author_id)}
+        style={{ background: expanded === a.author_id ? "var(--muted)" : undefined }}
       >
         <td>
           <div
@@ -30,7 +38,7 @@ export default function AutherRow({ a }: { a: Author }) {
                 width: 32,
                 height: 32,
                 borderRadius: "50%",
-                background: `hsl(${a.id.charCodeAt(2) * 47}deg 55% 60%)`,
+                background: `hsl(${a.author_id.charCodeAt(2) * 47}deg 55% 60%)`,
                 color: "#fff",
                 fontWeight: 700,
                 fontSize: 12,
@@ -46,23 +54,17 @@ export default function AutherRow({ a }: { a: Author }) {
           </div>
         </td>
         <td style={{ color: "var(--muted-foreground)" }}>{a.nationality}</td>
-        <td style={{ fontWeight: 600 }}>{a.bookCount}</td>
-        <td style={{ fontWeight: 600 }}>{a.borrowCount.toLocaleString()}</td>
+        <td style={{ fontWeight: 600 }}>{a.book_count}</td>
         <td>★ {a.rating.toFixed(1)}</td>
         <td>
-          <Button
-            variant="ghost"
-            size="xs"
-            onClick={(e) => e.stopPropagation()}
-          >
-            Edit
-          </Button>
+            <RowActions author_id={a.author_id} params={params} />
         </td>
       </tr>
-      {expanded === a.id && (
+      
+      {expanded === a.author_id && (
         <tr>
           <td
-            colSpan={6}
+            colSpan={5}
             style={{
               padding: "0 14px 14px 56px",
               fontSize: 13,
@@ -72,7 +74,7 @@ export default function AutherRow({ a }: { a: Author }) {
               background: "var(--muted)",
             }}
           >
-            {a.bio}
+            {a?.bio}
           </td>
         </tr>
       )}

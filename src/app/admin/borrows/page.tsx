@@ -1,5 +1,6 @@
+import { createClient } from "@/lib/server";
 import { AlertTriangle, RotateCcw } from "lucide-react";
-import { ALL_LOANS, fmtDate } from "@/mock/adminData";
+import { fmtDate } from "@/mock/adminData";
 import Button from "@/components/ui/Button";
 import styles from "@/styles/admin-shared.module.css";
 import Link from "next/link";
@@ -15,30 +16,78 @@ interface Props {
   searchParams: Promise<{
     q?: string;
     filter?: string;
-    
+
   }>;
 }
 
 export default async function BorrowManagementPage({ searchParams }: Props) {
+  const supabase = await createClient();
   const params = await searchParams;
   const { q, filter } = params;
   const query = q ?? "";
   const status = filter;
 
-  const overdue = ALL_LOANS.filter((l) => l.status === "overdue");
-  const totalFines = overdue.reduce((s, l) => s + (l.fine ?? 0), 0);
+  // Fetch borrow records with member and book info via joins
+  const { data, error } = await supabase
+    .from('borrow_records')
+    .select(`
+      *,
+      members!borrow_records_member_id_fkey(name, email),
+      booksOld!borrow_records_book_id_fkey(title, author)
+    `)
+    .order('borrowed_at', { ascending: false })
+    .returns<{
+      borrowrecord_id: string;
+      member_id: string;
+      book_id: string;
+      borrowed_at: string;
+      due_at: string;
+      returned_at: string | null;
+      renew_count: number;
+      max_renews: number;
+      borrowrecord_status: string;
+      fine: number | string;
+      notes: string | null;
+      members: { name: string; email: string } | null;
+      booksOld: { title: string; author: string } | null;
+    }[]>();
 
-  const filtered = ALL_LOANS.filter((l) => {
-    const q = query.toLowerCase();
-    if (
-      q &&
-      !l.memberName.toLowerCase().includes(q) &&
-      !l.bookTitle.toLowerCase().includes(q)
-    )
-      return false;
-    if (status !== "All" && l.status !== status) return false;
-    return true;
-  });
+  if (error) console.error(error);
+
+  const rows = (data ?? []).map((l) => ({
+    id: l.borrowrecord_id,
+    memberId: l.member_id,
+    bookId: l.book_id,
+    borrowedAt: l.borrowed_at,
+    dueAt: l.due_at,
+    returnedAt: l.returned_at ?? null,
+    renewCount: l.renew_count,
+    maxRenews: l.max_renews,
+    status: l.borrowrecord_status,
+    fine: typeof l.fine === 'number' ? l.fine : parseFloat(String(l.fine)) || 0,
+    notes: l.notes ?? null,
+    memberName: l.members?.name ?? '',
+    memberEmail: l.members?.email ?? '',
+    bookTitle: l.booksOld?.title ?? '',
+    bookAuthor: l.booksOld?.author ?? '',
+  }));
+
+  const overdue = rows.filter((l) => l.status === 'overdue');
+  const totalFines = overdue.reduce((s, l) => s + l.fine, 0);
+
+  const filtered = query || status !== 'All'
+    ? rows.filter((l) => {
+        const ql = query.toLowerCase();
+        if (
+          ql &&
+          !l.memberName.toLowerCase().includes(ql) &&
+          !l.bookTitle.toLowerCase().includes(ql)
+        )
+          return false;
+        if (status !== 'All' && l.status !== status) return false;
+        return true;
+      })
+    : rows;
 
   return (
     <div className={styles.page}>
@@ -46,7 +95,7 @@ export default async function BorrowManagementPage({ searchParams }: Props) {
         <div>
           <h1 className={styles.pageTitle}>Borrow Management</h1>
           <p className={styles.pageSub}>
-            {ALL_LOANS.filter((l) => l.status === "active").length} active ·{" "}
+            {rows.filter((l) => l.status === "active").length} active ·{" "}
             {overdue.length} overdue · ${totalFines.toFixed(2)} in fines
           </p>
         </div>

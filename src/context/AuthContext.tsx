@@ -1,13 +1,14 @@
 "use client";
-//I have tio remove the localstorage and use the cookie
 
-import React, { createContext, useContext, useState, useCallback } from "react";
+import React, { createContext, useContext, useState, useCallback, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { createClient } from "@/lib/client";
 
 export type UserRole = "user" | "admin";
 
 export interface AuthUser {
   id: string;
+  memberId: string | null;
   name: string;
   email: string;
   role: UserRole;
@@ -39,22 +40,13 @@ export interface SignupCredentials {
 export interface AuthContextValue extends AuthState {
   login: (
     credentials: LoginCredentials,
-  ) => Promise<{ success: boolean; error?: string,authUser?:AuthUser }>;
-  signup: (
-    credentials: SignupCredentials,
-  ) => Promise<{ success: boolean; error?: string }>;
+  ) => Promise<{ success: boolean; error?: string; authUser?: AuthUser }>;
+  signup: (credentials: SignupCredentials) => Promise<{ success: boolean; error?: string }>;
   logout: () => Promise<void>;
-  forgotPassword: (
-    email: string,
-  ) => Promise<{ success: boolean; error?: string }>;
-  resetPassword: (
-    token: string,
-    password: string,
-  ) => Promise<{ success: boolean; error?: string }>;
+  forgotPassword: (email: string) => Promise<{ success: boolean; error?: string }>;
+  resetPassword: (token: string, password: string) => Promise<{ success: boolean; error?: string }>;
   verifyEmail: (token: string) => Promise<{ success: boolean; error?: string }>;
-  resendVerification: (
-    email: string,
-  ) => Promise<{ success: boolean; error?: string }>;
+  resendVerification: (email: string) => Promise<{ success: boolean; error?: string }>;
   clearError: () => void;
 }
 
@@ -73,150 +65,257 @@ const AuthContext = createContext<AuthContextValue>({
   clearError: () => {},
 });
 
-/* ── Mock data ── */
-const MOCK_USERS: (AuthUser & { password: string })[] = [
-  {
-    id: "usr_1",
-    name: "Alice Chen",
-    email: "alice@library.dev",
-    password: "password123",
-    role: "admin",
-    emailVerified: true,
-    createdAt: "2024-01-15T10:00:00Z",
-    avatharInitials: "AC",
+/** Get initials from a name: "Alice Chen" → "AC" */
+function getInitials(name: string): string {
+  return name
+    .split(" ")
+    .map((w) => w[0])
+    .join("")
+    .toUpperCase()
+    .slice(0, 2);
+}
 
-  },
-  {
-    id: "usr_2",
-    name: "Bob Martinez",
-    email: "bob@library.dev",
-    password: "password123",
-    role: "user",
-    emailVerified: true,
-    createdAt: "2024-03-20T14:30:00Z",
-    avatharInitials: "BM",
-  },
-];
+/** Build an AuthUser from Supabase user metadata */
+function buildAuthUser(supabaseUser: {
+  id: string;
+  email?: string;
+  user_metadata?: Record<string, unknown>;
+  app_metadata?: Record<string, unknown>;
+  email_confirmed_at?: string;
+  created_at: string;
+}): AuthUser {
+  const name =
+    (supabaseUser.user_metadata?.full_name as string) ||
+    (supabaseUser.user_metadata?.name as string) ||
+    supabaseUser.email?.split("@")[0] ||
+    "User";
 
-function delay(ms: number) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
+  return {
+    id: supabaseUser.id,
+    memberId: (supabaseUser.app_metadata?.member_id as string) || null,
+    name,
+    email: supabaseUser.email || "",
+    role: "user", // Default, will be updated from members table
+    emailVerified: !!supabaseUser.email_confirmed_at,
+    createdAt: supabaseUser.created_at,
+    avatharInitials: getInitials(name),
+  };
 }
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   const router = useRouter();
+  const supabase = createClient();
 
   const clearError = useCallback(() => setError(null), []);
+
+  // On mount, check for existing session
+  useEffect(() => {
+    async function getSession() {
+      const { data: { session } } = await supabase.auth.getSession();
+
+      if (session?.user) {
+        const authUser = buildAuthUser(session.user);
+
+        // Look up member data from the members table
+        if (session.user.email) {
+          const { data: memberRows } = await supabase
+            .from('members')
+            .select('member_id, role')
+            .eq('email', session.user.email)
+            .limit(1)
+            .single();
+
+          if (memberRows) {
+            authUser.id = memberRows.member_id;
+            authUser.memberId = memberRows.member_id;
+            authUser.role = memberRows.role as UserRole;
+          }
+        }
+
+        setUser(authUser);
+      }
+      setIsLoading(false);
+    }
+    getSession();
+
+    // Listen for auth state changes (login/logout/token refresh)
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      async (_event, session) => {
+        if (session?.user) {
+          const authUser = buildAuthUser(session.user);
+
+          // Look up member data from the members table
+          if (session.user.email) {
+            const { data: memberRows } = await supabase
+              .from('members')
+              .select('member_id, role')
+              .eq('email', session.user.email)
+              .limit(1)
+              .single();
+
+            if (memberRows) {
+              authUser.id = memberRows.member_id;
+              authUser.memberId = memberRows.member_id;
+              authUser.role = memberRows.role as UserRole;
+            }
+          }
+
+          setUser(authUser);
+        } else {
+          setUser(null);
+        }
+      },
+    );
+
+    return () => subscription.unsubscribe();
+  }, [supabase]);
 
   const login = useCallback(async (credentials: LoginCredentials) => {
     setIsLoading(true);
     setError(null);
-    await delay(800);
 
-    const found = MOCK_USERS.find(
-      (u) =>
-        u.email === credentials.email && u.password === credentials.password,
-    );
+    const { data, error: authError } = await supabase.auth.signInWithPassword({
+      email: credentials.email,
+      password: credentials.password,
+    });
 
     setIsLoading(false);
 
-    if (!found) {
-      const msg =
-        "Invalid email or password. Try alice@library.dev / password123";
+    if (authError) {
+      const msg = authError.message.includes("Invalid login credentials")
+        ? "Invalid email or password."
+        : authError.message;
       setError(msg);
       return { success: false, error: msg };
     }
 
-    const { password: _, ...authUser } = found;
-    setUser(authUser);
-    
-    return { success: true,authUser };
-  }, []);
+    if (data.user) {
+      // Look up member data from the members table by email
+      const { data: memberRows } = await supabase
+        .from('members')
+        .select('member_id, role')
+        .eq('email', data.user.email!)
+        .limit(1)
+        .single();
+
+      const authUser = buildAuthUser(data.user);
+
+      if (memberRows) {
+        authUser.id = memberRows.member_id;
+        authUser.memberId = memberRows.member_id;
+        authUser.role = memberRows.role as UserRole;
+      }
+
+      setUser(authUser);
+      return { success: true, authUser };
+    }
+
+    return { success: false, error: "Login failed." };
+  }, [supabase]);
 
   const signup = useCallback(async (credentials: SignupCredentials) => {
     setIsLoading(true);
     setError(null);
-    await delay(1000);
 
-    const exists = MOCK_USERS.find((u) => u.email === credentials.email);
+    const { error: authError } = await supabase.auth.signUp({
+      email: credentials.email,
+      password: credentials.password,
+      options: {
+        data: {
+          full_name: credentials.name,
+        },
+      },
+    });
 
     setIsLoading(false);
 
-    if (exists) {
-      const msg = "An account with this email already exists.";
+    if (authError) {
+      const msg = authError.message.includes("already registered")
+        ? "An account with this email already exists."
+        : authError.message;
       setError(msg);
       return { success: false, error: msg };
     }
 
-    const newUser: AuthUser = {
-      id: `usr_${Date.now()}`,
-      name: credentials.name,
-      email: credentials.email,
-      role: "user",
-      emailVerified: false,
-      createdAt: new Date().toISOString(),
-    };
-    setUser(newUser);
-    // Store mock user in localStorage for persistence
-    localStorage.setItem("mock_user", JSON.stringify(newUser));
+    // Supabase may auto-sign-in if email confirm is disabled.
+    // If it did, the onAuthStateChange listener will pick up the user.
     return { success: true };
-  }, []);
+  }, [supabase]);
 
   const logout = useCallback(async () => {
     setIsLoading(true);
-    await delay(300);
+    await supabase.auth.signOut();
     setUser(null);
     setIsLoading(false);
-    // Clear mock user from localStorage on logout
-    localStorage.removeItem("mock_user");
     router.push("/");
-
-  }, []);
+  }, [supabase, router]);
 
   const forgotPassword = useCallback(async (email: string) => {
     setIsLoading(true);
-    await delay(900);
+    setError(null);
+
+    const { error: authError } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${window.location.origin}/reset-password`,
+    });
+
     setIsLoading(false);
-    // Always succeed (don't leak whether email exists)
+
+    if (authError) {
+      setError(authError.message);
+      return { success: false, error: authError.message };
+    }
+
     return { success: true };
-  }, []);
+  }, [supabase]);
 
-  const resetPassword = useCallback(
-    async (_token: string, _password: string) => {
-      setIsLoading(true);
-      await delay(800);
-      setIsLoading(false);
-      // TODO: call resetPassword service
-      return { success: true };
-    },
-    [],
-  );
-
-  const verifyEmail = useCallback(
-    async (_token: string) => {
-      setIsLoading(true);
-      await delay(600);
-      if (user)
-        setUser((prev) => (prev ? { ...prev, emailVerified: true } : null));
-      setIsLoading(false);
-      // TODO: call verifyEmail service
-      return { success: true };
-    },
-    [user],
-  );
-
-  const resendVerification = useCallback(async (_email: string) => {
+  const resetPassword = useCallback(async (token: string, password: string) => {
     setIsLoading(true);
-    await delay(700);
+    setError(null);
+
+    const { error: authError } = await supabase.auth.updateUser({
+      password,
+    });
+
     setIsLoading(false);
-    // TODO: call resendVerification service
+
+    if (authError) {
+      setError(authError.message);
+      return { success: false, error: authError.message };
+    }
+
+    return { success: true };
+  }, [supabase]);
+
+  const verifyEmail = useCallback(async (_token: string) => {
+    setIsLoading(true);
+    setIsLoading(false);
+    // Supabase handles email verification automatically via the confirmation link.
+    // The onAuthStateChange listener will update the user when verified.
     return { success: true };
   }, []);
 
-  console.log("AuthProvider render", { user, isLoading, error });
+  const resendVerification = useCallback(async (email: string) => {
+    setIsLoading(true);
+    setError(null);
+
+    const { error: authError } = await supabase.auth.resend({
+      type: "signup",
+      email,
+    });
+
+    setIsLoading(false);
+
+    if (authError) {
+      setError(authError.message);
+      return { success: false, error: authError.message };
+    }
+
+    return { success: true };
+  }, [supabase]);
 
   return (
     <AuthContext.Provider

@@ -9,7 +9,7 @@ import React, {
 } from "react";
 import { usePathname } from "next/navigation";
 import { AdminRoute } from "@/constants/admin-sidebar-constants";
-import type { UserRoute } from "@/components/layout/admin-navbar";
+import type { UserRoute } from "@/components/layout/user-navbar";
 import { useAuth } from "./AuthContext";
 
 interface AppContextType {
