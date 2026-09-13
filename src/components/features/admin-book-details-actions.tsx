@@ -15,7 +15,7 @@ export default function BookDetailsActions({ book }: { book: Book }) {
 
   return (
     <>
-      <div style={{ display: "flex", gap: 8 }}>
+      <div className="flex gap-2">
         <Button variant="outline" size="sm" onClick={() => setEditing(true)}>
           Edit
         </Button>
@@ -38,7 +38,7 @@ export default function BookDetailsActions({ book }: { book: Book }) {
         <DeleteBookModal
           book={book}
           onClose={() => setRemoving(false)}
-onDeleted={() => {
+          onDeleted={() => {
             setRemoving(false);
             router.push(adminDefaultHref("books"));
           }}

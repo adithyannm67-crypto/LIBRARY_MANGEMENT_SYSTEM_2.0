@@ -2,6 +2,7 @@ import styles from "@/styles/admin-shared.module.css";
 
 import { fmtDate } from "@/mock/adminData";
 import { createClient } from "@/lib/server";
+import Link from "next/link";
 
 interface Props {
   params: Promise<{ bookId: string }>;
@@ -37,6 +38,7 @@ export default async function AdminBookLoansPage({ params }: Props) {
 
   const loans = (data ?? []).map((l) => ({
     id: l.borrowrecord_id,
+    memberId: l.member_id,
     memberName: l.members?.name ?? l.member_id,
     memberEmail: l.members?.email ?? "",
     borrowedAt: l.borrowed_at,
@@ -48,7 +50,9 @@ export default async function AdminBookLoansPage({ params }: Props) {
   return (
     <div className={styles.section}>
       <div className={styles.sectionHead}>
-        <span className={styles.sectionTitle}>Borrow History</span>
+        <span className={styles.sectionTitle}>
+          Borrow History ({loans.length})
+        </span>
       </div>
       <div className={styles.tableWrap}>
         <table>
@@ -63,22 +67,25 @@ export default async function AdminBookLoansPage({ params }: Props) {
             {loans.map((l) => (
               <tr key={l.id}>
                 <td>
-                  <div style={{ fontWeight: 600 }}>{l.memberName}</div>
+                  <Link
+                    href={`/admin/member-details/${l.memberId}`}
+                    className="font-semibold text-inherit no-underline hover:text-accent"
+                  >
+                    {l.memberName}
+                  </Link>
                   {l.memberEmail && (
-                    <div
-                      style={{ fontSize: 11, color: "var(--muted-foreground)" }}
-                    >
+                    <div className="text-[11px] text-muted-foreground">
                       {l.memberEmail}
                     </div>
                   )}
                 </td>
-                <td style={{ color: "var(--muted-foreground)" }}>
+                <td className="text-muted-foreground">
                   {fmtDate(l.borrowedAt)}
                 </td>
-                <td style={{ color: "var(--muted-foreground)" }}>
+                <td className="text-muted-foreground">
                   {fmtDate(l.dueAt)}
                 </td>
-                <td style={{ color: "var(--muted-foreground)" }}>
+                <td className="text-muted-foreground">
                   {l.returnedAt ? fmtDate(l.returnedAt) : "—"}
                 </td>
                 <td>
@@ -95,15 +102,7 @@ export default async function AdminBookLoansPage({ params }: Props) {
           </tbody>
         </table>
         {loans.length === 0 && (
-          <p
-            style={{
-              textAlign: "center",
-              padding: "24px",
-              fontSize: 13,
-              color: "var(--muted-foreground)",
-              margin: 0,
-            }}
-          >
+          <p className="py-6 text-center text-[13px] text-muted-foreground">
             No borrow history.
           </p>
         )}

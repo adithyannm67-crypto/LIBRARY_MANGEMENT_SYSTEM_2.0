@@ -185,15 +185,7 @@ export default async function PublishersPage({ searchParams }: Props) {
         ))}
       </div>
       {filtered.length === 0 && (
-        <p
-          style={{
-            textAlign: "center",
-            padding: "48px",
-            fontSize: 13,
-            color: "var(--muted-foreground)",
-            margin: 0,
-          }}
-        >
+        <p className={styles.emptyState}>
           No publishers match.
         </p>
       )}

@@ -3,6 +3,7 @@ import styles from "@/styles/admin-shared.module.css";
 
 import { fmtDate } from "@/mock/adminData";
 import { createClient } from "@/lib/server";
+import { getBook } from "@/utils/bookQueries";
 
 interface Props {
   params: Promise<{ bookId: string }>;
@@ -27,11 +28,7 @@ export default async function AdminBookInventoryPage({ params }: Props) {
   const { bookId } = await params;
 
   const supabase = await createClient();
-  const { data: book } = await supabase
-    .from("books_with_authors")
-    .select("title")
-    .eq("book_id", bookId)
-    .single<{ title: string }>();
+  const book = await getBook(bookId);
 
   const { data, error } = await supabase
     .from("inventory")
@@ -92,14 +89,11 @@ export default async function AdminBookInventoryPage({ params }: Props) {
           <tbody>
             {copies.map((c) => (
               <tr key={c.id}>
-                <td style={{ fontWeight: 600 }}>#{c.copyNumber}</td>
+                <td className="font-semibold">#{c.copyNumber}</td>
                 <td>
                   <span
-                    style={{
-                      fontSize: 12,
-                      fontWeight: 600,
-                      color: COND_COLOR[c.condition],
-                    }}
+                    className="text-xs font-semibold"
+                    style={{ color: COND_COLOR[c.condition] }}
                   >
                     {c.condition}
                   </span>
@@ -113,19 +107,24 @@ export default async function AdminBookInventoryPage({ params }: Props) {
                     {c.status}
                   </span>
                 </td>
-                <td style={{ color: "var(--muted-foreground)" }}>
+                <td className="text-muted-foreground">
                   {c.acquiredAt ? fmtDate(c.acquiredAt) : "—"}
                 </td>
-                <td style={{ color: "var(--muted-foreground)" }}>
+                <td className="text-muted-foreground">
                   {c.lastChecked ? fmtDate(c.lastChecked) : "—"}
                 </td>
-                <td style={{ color: "var(--muted-foreground)", fontSize: 12 }}>
+                <td className="text-xs text-muted-foreground">
                   {c.notes ?? "—"}
                 </td>
               </tr>
             ))}
           </tbody>
         </table>
+        {copies.length === 0 && (
+          <p className="py-6 text-center text-[13px] text-muted-foreground">
+            No copies registered for this book yet.
+          </p>
+        )}
       </div>
     </div>
   );

@@ -48,7 +48,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(({
       disabled={disabled || loading}
       className={clsx(
         styles.root,
-        styles[variant],
+        !isBackButton && styles[variant],
         styles[size],
         loading && styles.loading,
         fullWidth && styles.fullWidth,

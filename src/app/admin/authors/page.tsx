@@ -60,6 +60,33 @@ export default async function AuthorsPage({ searchParams }: Props) {
         <FilterBar />
 
         <div className={styles.section}>
+          <div className={styles.tableWrap}>
+            <table className={styles.table}>
+              <thead>
+                <tr>
+                  {[
+                    "Author",
+                    "Nationality",
+                    "Books",
+                    "Rating",
+                    "",
+                  ].map((h) => (
+                    <th key={h}>{h}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {filtered.map((a) => (
+                  <AutherRow key={a.author_id} a={a} />
+                ))}
+              </tbody>
+            </table>
+            {filtered.length === 0 && (
+              <p className={styles.emptyState}>
+                No authors match.
+              </p>
+            )}
+          </div>
           <AuthersTable authors={filtered} searchParams={searchParams} />
         </div>
       </div>
