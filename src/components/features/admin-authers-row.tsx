@@ -1,19 +1,29 @@
 "use client";
-
 import { useState } from "react";
+
 import styles from "@/styles/admin-shared.module.css";
-import Button from "@/components/ui/Button";
+
 
 import { Author } from "@/types/database";
+import RowActions from "./admin-authers-row-actions";
 
-export default function AutherRow({ a }: { a: Author }) {
+export default function AuthorRow({
+  a,
+  
+  params,
+}: {
+  a: Author;
+  params: URLSearchParams;
+}) {
+
+ 
   const [expanded, setExpanded] = useState<string | null>(null);
   return (
     <>
       <tr
         className={styles.clickable}
         onClick={() => setExpanded(expanded === a.author_id ? null : a.author_id)}
-        style={{ background: expanded === a.author_id ? "var(--muted)" : undefined, }}
+        style={{ background: expanded === a.author_id ? "var(--muted)" : undefined }}
       >
         <td>
           <div
@@ -47,19 +57,14 @@ export default function AutherRow({ a }: { a: Author }) {
         <td style={{ fontWeight: 600 }}>{a.book_count}</td>
         <td>★ {a.rating.toFixed(1)}</td>
         <td>
-          <Button
-            variant="ghost"
-            size="xs"
-            onClick={(e) => e.stopPropagation()}
-          >
-            Edit
-          </Button>
+            <RowActions author_id={a.author_id} params={params} />
         </td>
       </tr>
+      
       {expanded === a.author_id && (
         <tr>
           <td
-            colSpan={6}
+            colSpan={5}
             style={{
               padding: "0 14px 14px 56px",
               fontSize: 13,
