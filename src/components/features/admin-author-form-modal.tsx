@@ -1,15 +1,16 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { X } from "lucide-react";
 import Button from "@/components/ui/Button";
 import type { Author } from "@/types/database";
 import { createClient } from "@/lib/client";
 
+
 interface AuthorFormModalProps {
   author?: Author;
-  onClose: () => void;
-  onSaved: () => void;
+  params: URLSearchParams;
 }
 
 type FormData = {
@@ -71,9 +72,16 @@ function FieldError({ msg }: { msg?: string }) {
 
 export default function AuthorFormModal({
   author,
-  onClose,
-  onSaved,
+  
+  params,
 }: AuthorFormModalProps) {
+
+  const router = useRouter();
+  const clearParam = (param: string) => {
+    const p = new URLSearchParams(params);
+    p.delete(param);
+    router.replace(`?${p.toString()}`);
+  };
   const [form, setForm] = useState(author ? initialForm(author) : emptyForm());
   const [errors, setErrors] = useState<FormErrors>({});
   const [saving, setSaving] = useState(false);
@@ -105,7 +113,7 @@ export default function AuthorFormModal({
         (k) => form[k] !== original[k],
       );
       if (!changed) {
-        onClose();
+        clearParam("edit");
         return;
       }
     }
@@ -121,7 +129,7 @@ export default function AuthorFormModal({
         p_rating: Number(form.rating),
       });
       if (error) throw error;
-      onSaved();
+      clearParam("edit");
     } catch (err) {
       console.error("Failed to save author:", err);
       alert(isEdit ? "Failed to save author changes." : "Failed to add author.");
@@ -184,7 +192,7 @@ export default function AuthorFormModal({
         animation: "fadeUp 150ms ease both",
       }}
       onClick={(e) => {
-        if (e.target === e.currentTarget) onClose();
+        if (e.target === e.currentTarget) clearParam("edit");
       }}
     >
       <div
@@ -220,7 +228,7 @@ export default function AuthorFormModal({
             {isEdit ? "Edit Author" : "Add Author"}
           </h2>
           <button
-            onClick={onClose}
+            onClick={()=>clearParam("edit")}
             style={{
               width: 30,
               height: 30,
@@ -309,7 +317,7 @@ export default function AuthorFormModal({
               paddingTop: 8,
             }}
           >
-            <Button variant="outline" size="sm" onClick={onClose}>
+            <Button variant="outline" size="sm" onClick={()=>clearParam("edit")}>
               Cancel
             </Button>
             <Button

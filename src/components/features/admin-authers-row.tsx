@@ -1,21 +1,22 @@
 "use client";
-
 import { useState } from "react";
-import { Pencil, Trash2 } from "lucide-react";
+
 import styles from "@/styles/admin-shared.module.css";
-import Button from "@/components/ui/Button";
+
 
 import { Author } from "@/types/database";
+import RowActions from "./admin-authers-row-actions";
 
-export default function AutherRow({
+export default function AuthorRow({
   a,
-  onEdit,
-  onDelete,
+  
+  params,
 }: {
   a: Author;
-  onEdit: (author: Author) => void;
-  onDelete: (author: Author) => void;
+  params: URLSearchParams;
 }) {
+
+ 
   const [expanded, setExpanded] = useState<string | null>(null);
   return (
     <>
@@ -56,33 +57,10 @@ export default function AutherRow({
         <td style={{ fontWeight: 600 }}>{a.book_count}</td>
         <td>★ {a.rating.toFixed(1)}</td>
         <td>
-          <div style={{ display: "flex", gap: 4 }}>
-            <Button
-              variant="ghost"
-              size="xs"
-              leadingIcon={<Pencil size={11} />}
-              onClick={(e) => {
-                e.stopPropagation();
-                onEdit(a);
-              }}
-            >
-              Edit
-            </Button>
-            <Button
-              variant="ghost"
-              size="xs"
-              leadingIcon={<Trash2 size={11} />}
-              style={{ color: "var(--destructive)" }}
-              onClick={(e) => {
-                e.stopPropagation();
-                onDelete(a);
-              }}
-            >
-              Delete
-            </Button>
-          </div>
+            <RowActions author_id={a.author_id} params={params} />
         </td>
       </tr>
+      
       {expanded === a.author_id && (
         <tr>
           <td

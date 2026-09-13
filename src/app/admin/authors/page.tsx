@@ -12,6 +12,9 @@ interface Props {
   searchParams: Promise<{
     q?: string;
     sort?: string;
+    edit?: string;
+    delete?: string;
+    expand?: string;
   }>;
 }
 
@@ -57,7 +60,7 @@ export default async function AuthorsPage({ searchParams }: Props) {
         <FilterBar />
 
         <div className={styles.section}>
-          <AuthersTable authors={filtered} />
+          <AuthersTable authors={filtered} searchParams={searchParams} />
         </div>
       </div>
     </PageProvider>

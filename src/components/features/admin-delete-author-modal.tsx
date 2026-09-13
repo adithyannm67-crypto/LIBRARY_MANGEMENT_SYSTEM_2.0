@@ -1,22 +1,30 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Trash2, X } from "lucide-react";
 import Button from "@/components/ui/Button";
 import type { Author } from "@/types/database";
 import { createClient } from "@/lib/client";
 
+
 interface DeleteAuthorModalProps {
   author: Author;
-  onClose: () => void;
-  onDeleted: () => void;
+  params: URLSearchParams;
 }
 
 export default function DeleteAuthorModal({
   author,
-  onClose,
-  onDeleted,
+params,
 }: DeleteAuthorModalProps) {
+  const router = useRouter();
+
+  
+  const clearParam = (param: string) => {
+    const p = new URLSearchParams(params);
+    p.delete(param);
+    router.replace(`?${p.toString()}`);
+  };
   const [deleting, setDeleting] = useState(false);
 
   const handleDelete = async () => {
@@ -27,7 +35,7 @@ export default function DeleteAuthorModal({
         p_author_id: author.author_id,
       });
       if (error) throw error;
-      onDeleted();
+      clearParam("delete");
     } catch (err) {
       console.error("Failed to delete author:", err);
       alert("Failed to delete author.");
@@ -51,7 +59,7 @@ export default function DeleteAuthorModal({
         animation: "fadeUp 150ms ease both",
       }}
       onClick={(e) => {
-        if (e.target === e.currentTarget) onClose();
+        if (e.target === e.currentTarget) clearParam("delete");
       }}
     >
       <div
@@ -85,7 +93,7 @@ export default function DeleteAuthorModal({
             Delete Author
           </h2>
           <button
-            onClick={onClose}
+            onClick={() => clearParam("delete")}
             style={{
               width: 30,
               height: 30,
@@ -129,7 +137,7 @@ export default function DeleteAuthorModal({
             padding: "0 20px 20px",
           }}
         >
-          <Button variant="outline" size="sm" onClick={onClose}>
+          <Button variant="outline" size="sm" onClick={() => clearParam("delete")}>
             Cancel
           </Button>
           <Button
