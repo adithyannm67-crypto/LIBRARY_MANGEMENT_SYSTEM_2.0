@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { AlertTriangle, Camera, Mail, Phone, Calendar, Edit3, Check, X } from 'lucide-react';
-import { USER_PROFILE } from '@/mock/portalData';
+import { USER_PROFILE } from '@/styles/mock/portalData';
 
 import Button from '@/components/ui/Button';
 import Card from '@/components/ui/Card';

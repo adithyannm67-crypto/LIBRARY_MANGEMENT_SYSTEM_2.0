@@ -5,6 +5,8 @@ import { X } from "lucide-react";
 import Button from "@/components/ui/Button";
 import type { Book } from "@/types/database";
 import { createClient } from "@/lib/client";
+import { cn } from "@/lib/utils";
+import styles from "@/styles/admin-modal.module.css";
 
 interface BookFormModalProps {
   book?: Book;
@@ -234,16 +236,9 @@ async function saveBookLegacy(
   }
 }
 
-const errorTextStyle: React.CSSProperties = {
-  fontSize: 11,
-  color: "var(--destructive)",
-  marginTop: 3,
-  lineHeight: 1.3,
-};
-
 function FieldError({ msg }: { msg?: string }) {
   if (!msg) return null;
-  return <div style={errorTextStyle}>{msg}</div>;
+  return <div className={styles.errorText}>{msg}</div>;
 }
 
 export default function BookFormModal({ book, existingBooks, onClose, onSaved }: BookFormModalProps) {
@@ -339,304 +334,184 @@ export default function BookFormModal({ book, existingBooks, onClose, onSaved }:
     }
   };
 
-  const errorBorder = (field: keyof FormErrors): React.CSSProperties =>
-    errors[field]
-      ? { borderColor: "var(--destructive)" }
-      : {};
-
-  const inputStyle: React.CSSProperties = {
-    width: "100%",
-    padding: "7px 11px",
-    border: "1px solid var(--border)",
-    borderRadius: 8,
-    fontFamily: "inherit",
-    fontSize: 13,
-    background: "var(--input-background)",
-    color: "var(--foreground)",
-    outline: "none",
-    transition: "border-color var(--transition-fast, 80ms ease)",
-    boxSizing: "border-box",
-  };
-
-  const labelStyle: React.CSSProperties = {
-    fontSize: 13,
-    fontWeight: 500,
-    minWidth: 160,
-    flexShrink: 0,
-    color: "var(--foreground)",
-  };
-
-  const requiredDot: React.CSSProperties = {
-    color: "var(--destructive)",
-    marginLeft: 2,
-  };
-
-  const rowStyle: React.CSSProperties = {
-    display: "flex",
-    alignItems: "flex-start",
-    gap: 12,
-    padding: "12px 0",
-    borderBottom: "1px solid var(--border)",
-  };
+  const inputCls = (field: keyof FormErrors, ...extras: (string | false | undefined)[]) =>
+    cn(styles.input, extras, errors[field] && styles.inputError);
 
   return (
     <div
-      style={{
-        position: "fixed",
-        inset: 0,
-        zIndex: 1000,
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        background: "rgba(0,0,0,0.5)",
-        backdropFilter: "blur(4px)",
-        animation: "fadeUp 150ms ease both",
-      }}
+      className={styles.overlay}
       onClick={(e) => {
         if (e.target === e.currentTarget) onClose();
       }}
     >
-      <div
-        style={{
-          background: "var(--card)",
-          border: "1px solid var(--border)",
-          borderRadius: 14,
-          width: "90%",
-          maxWidth: 560,
-          maxHeight: "85vh",
-          overflow: "auto",
-          boxShadow: "0 20px 60px rgba(0,0,0,0.25)",
-        }}
-      >
+      <div className={cn(styles.dialog, styles.dialogTop)}>
         {/* Header */}
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            padding: "16px 20px",
-            borderBottom: "1px solid var(--border)",
-          }}
-        >
-          <h2 style={{ fontSize: 16, fontWeight: 700, margin: 0, letterSpacing: "-0.02em" }}>
+        <div className={styles.header}>
+          <h2 className={styles.title}>
             {isEdit ? "Edit Book" : "Add Book"}
           </h2>
-          <button
-            onClick={onClose}
-            style={{
-              width: 30,
-              height: 30,
-              borderRadius: 8,
-              border: "none",
-              background: "var(--muted)",
-              cursor: "pointer",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              color: "var(--muted-foreground)",
-            }}
-          >
+          <button onClick={onClose} className={styles.closeBtn}>
             <X size={14} />
           </button>
         </div>
 
         {/* Form */}
-        <div style={{ padding: "8px 20px 20px" }}>
+        <div className={styles.form}>
           {/* Row: Title */}
-          <div style={rowStyle}>
-            <label style={labelStyle}>
-              Title<span style={requiredDot}>*</span>
+          <div className={styles.row}>
+            <label className={styles.label}>
+              Title<span className={styles.requiredDot}>*</span>
             </label>
-            <div style={{ flex: 1 }}>
+            <div className={styles.field}>
               <input
                 name="title"
                 value={form.title}
                 onChange={handleChange}
-                style={{ ...inputStyle, ...errorBorder("title") }}
+                className={inputCls("title")}
               />
               <FieldError msg={errors.title} />
             </div>
           </div>
           {/* Row: Authors */}
-          <div style={rowStyle}>
-            <label style={labelStyle}>
-              Authors<span style={requiredDot}>*</span>
+          <div className={styles.row}>
+            <label className={styles.label}>
+              Authors<span className={styles.requiredDot}>*</span>
             </label>
-            <div style={{ flex: 1 }}>
+            <div className={styles.field}>
               {form.authors.map((author, idx) => (
-                <div
-                  key={idx}
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 6,
-                    marginBottom: 6,
-                  }}
-                >
+                <div key={idx} className={styles.authorRow}>
                   <input
                     value={author}
                     onChange={(e) => updateAuthor(idx, e.target.value)}
                     placeholder={`Author ${idx + 1}`}
-                    style={{ ...inputStyle, ...errorBorder("authors") }}
+                    className={inputCls("authors")}
                   />
                   <button
                     type="button"
                     onClick={() => removeAuthor(idx)}
                     aria-label={`Remove author ${idx + 1}`}
-                    style={{
-                      width: 28,
-                      height: 28,
-                      borderRadius: 7,
-                      border: "none",
-                      background: "var(--muted)",
-                      color: "var(--muted-foreground)",
-                      cursor: "pointer",
-                      flexShrink: 0,
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                    }}
+                    className={styles.iconBtnSm}
                   >
                     <X size={14} />
                   </button>
                 </div>
               ))}
               {form.authors.length === 0 && (
-                <div
-                  style={{
-                    fontSize: 12,
-                    color: "var(--muted-foreground)",
-                    marginBottom: 6,
-                  }}
-                >
-                  No authors added yet.
-                </div>
+                <div className={styles.hint}>No authors added yet.</div>
               )}
-              <button
-                type="button"
-                onClick={addAuthor}
-                style={{
-                  fontSize: 12,
-                  fontWeight: 600,
-                  color: "var(--accent)",
-                  background: "none",
-                  border: "none",
-                  padding: 0,
-                  cursor: "pointer",
-                }}
-              >
+              <button type="button" onClick={addAuthor} className={styles.linkBtn}>
                 + Add Author
               </button>
               <FieldError msg={errors.authors} />
             </div>
           </div>
           {/* Row: ISBN */}
-          <div style={rowStyle}>
-            <label style={labelStyle}>
-              ISBN<span style={requiredDot}>*</span>
+          <div className={styles.row}>
+            <label className={styles.label}>
+              ISBN<span className={styles.requiredDot}>*</span>
             </label>
-            <div style={{ flex: 1 }}>
+            <div className={styles.field}>
               <input
                 name="isbn"
                 value={form.isbn}
                 onChange={handleChange}
-                style={{ ...inputStyle, fontFamily: "monospace", ...errorBorder("isbn") }}
+                className={inputCls("isbn", styles.inputMono)}
               />
               <FieldError msg={errors.isbn} />
             </div>
           </div>
           {/* Row: Category */}
-          <div style={rowStyle}>
-            <label style={labelStyle}>
-              Category<span style={requiredDot}>*</span>
+          <div className={styles.row}>
+            <label className={styles.label}>
+              Category<span className={styles.requiredDot}>*</span>
             </label>
-            <div style={{ flex: 1 }}>
+            <div className={styles.field}>
               <input
                 name="category"
                 value={form.category}
                 onChange={handleChange}
-                style={{ ...inputStyle, ...errorBorder("category") }}
+                className={inputCls("category")}
               />
               <FieldError msg={errors.category} />
             </div>
           </div>
           {/* Row: Subcategory */}
-          <div style={rowStyle}>
-            <label style={labelStyle}>Subcategory</label>
-            <div style={{ flex: 1 }}>
+          <div className={styles.row}>
+            <label className={styles.label}>Subcategory</label>
+            <div className={styles.field}>
               <input
                 name="subcategory"
                 value={form.subcategory}
                 onChange={handleChange}
-                style={inputStyle}
+                className={styles.input}
               />
             </div>
           </div>
           {/* Row: Publisher */}
-          <div style={rowStyle}>
-            <label style={labelStyle}>
-              Publisher<span style={requiredDot}>*</span>
+          <div className={styles.row}>
+            <label className={styles.label}>
+              Publisher<span className={styles.requiredDot}>*</span>
             </label>
-            <div style={{ flex: 1 }}>
+            <div className={styles.field}>
               <input
                 name="publisher"
                 value={form.publisher}
                 onChange={handleChange}
-                style={{ ...inputStyle, ...errorBorder("publisher") }}
+                className={inputCls("publisher")}
               />
               <FieldError msg={errors.publisher} />
             </div>
           </div>
           {/* Row: Year / Pages */}
-          <div style={{ ...rowStyle, borderBottom: "1px solid var(--border)" }}>
-            <label style={labelStyle}>
-              Year<span style={requiredDot}>*</span>
+          <div className={styles.row}>
+            <label className={styles.label}>
+              Year<span className={styles.requiredDot}>*</span>
             </label>
-            <div style={{ flex: 1, maxWidth: 100 }}>
+            <div className={styles.fieldSm}>
               <input
                 name="published_year"
                 type="number"
                 value={form.published_year}
                 onChange={handleChange}
-                style={{ ...inputStyle, maxWidth: 100, ...errorBorder("published_year") }}
+                className={inputCls("published_year", styles.inputSm)}
               />
               <FieldError msg={errors.published_year} />
             </div>
-            <label style={{ ...labelStyle, marginLeft: 12 }}>
-              Pages<span style={requiredDot}>*</span>
+            <label className={cn(styles.label, styles.labelGap)}>
+              Pages<span className={styles.requiredDot}>*</span>
             </label>
-            <div style={{ flex: 1, maxWidth: 100 }}>
+            <div className={styles.fieldSm}>
               <input
                 name="pages"
                 type="number"
                 value={form.pages}
                 onChange={handleChange}
-                style={{ ...inputStyle, maxWidth: 100, ...errorBorder("pages") }}
+                className={inputCls("pages", styles.inputSm)}
               />
               <FieldError msg={errors.pages} />
             </div>
           </div>
           {/* Row: Language */}
-          <div style={rowStyle}>
-            <label style={labelStyle}>
-              Language<span style={requiredDot}>*</span>
+          <div className={styles.row}>
+            <label className={styles.label}>
+              Language<span className={styles.requiredDot}>*</span>
             </label>
-            <div style={{ flex: 1 }}>
+            <div className={styles.field}>
               <input
                 name="language"
                 value={form.language}
                 onChange={handleChange}
-                style={{ ...inputStyle, ...errorBorder("language") }}
+                className={inputCls("language")}
               />
               <FieldError msg={errors.language} />
             </div>
           </div>
           {/* Row: Rating */}
-          <div style={rowStyle}>
-            <label style={labelStyle}>
-              Rating<span style={requiredDot}>*</span>
+          <div className={styles.row}>
+            <label className={styles.label}>
+              Rating<span className={styles.requiredDot}>*</span>
             </label>
-            <div style={{ flex: 1, maxWidth: 120 }}>
+            <div className={styles.fieldMd}>
               <input
                 name="rating"
                 type="number"
@@ -645,91 +520,91 @@ export default function BookFormModal({ book, existingBooks, onClose, onSaved }:
                 max="5"
                 value={form.rating}
                 onChange={handleChange}
-                style={{ ...inputStyle, maxWidth: 120, ...errorBorder("rating") }}
+                className={inputCls("rating", styles.inputMd)}
               />
               <FieldError msg={errors.rating} />
             </div>
           </div>
           {/* Row: Total Copies / Available */}
-          <div style={{ ...rowStyle, borderBottom: "1px solid var(--border)" }}>
-            <label style={labelStyle}>
-              Total Copies<span style={requiredDot}>*</span>
+          <div className={styles.row}>
+            <label className={styles.label}>
+              Total Copies<span className={styles.requiredDot}>*</span>
             </label>
-            <div style={{ flex: 1, maxWidth: 100 }}>
+            <div className={styles.fieldSm}>
               <input
                 name="total_copies"
                 type="number"
                 value={form.total_copies}
                 onChange={handleChange}
-                style={{ ...inputStyle, maxWidth: 100, ...errorBorder("total_copies") }}
+                className={inputCls("total_copies", styles.inputSm)}
               />
               <FieldError msg={errors.total_copies} />
             </div>
-            <label style={{ ...labelStyle, marginLeft: 12 }}>
-              Available<span style={requiredDot}>*</span>
+            <label className={cn(styles.label, styles.labelGap)}>
+              Available<span className={styles.requiredDot}>*</span>
             </label>
-            <div style={{ flex: 1, maxWidth: 100 }}>
+            <div className={styles.fieldSm}>
               <input
                 name="available_copies"
                 type="number"
                 value={form.available_copies}
                 onChange={handleChange}
-                style={{ ...inputStyle, maxWidth: 100, ...errorBorder("available_copies") }}
+                className={inputCls("available_copies", styles.inputSm)}
               />
               <FieldError msg={errors.available_copies} />
             </div>
           </div>
           {/* Row: Tags */}
-          <div style={rowStyle}>
-            <label style={labelStyle}>Tags</label>
-            <div style={{ flex: 1 }}>
+          <div className={styles.row}>
+            <label className={styles.label}>Tags</label>
+            <div className={styles.field}>
               <input
                 name="tags"
                 value={form.tags}
                 onChange={handleChange}
-                style={inputStyle}
+                className={styles.input}
               />
             </div>
           </div>
           {/* Description */}
-          <div style={{ padding: "12px 0", borderBottom: "1px solid var(--border)" }}>
-            <label style={{ ...labelStyle, display: "block", marginBottom: 8 }}>
-              Description<span style={requiredDot}>*</span>
+          <div className={styles.fieldBlock}>
+            <label className={cn(styles.label, styles.labelBlock)}>
+              Description<span className={styles.requiredDot}>*</span>
             </label>
             <textarea
               name="description"
               value={form.description}
               onChange={handleChange}
               rows={3}
-              style={{ ...inputStyle, resize: "vertical", ...errorBorder("description") }}
+              className={inputCls("description", styles.textarea)}
             />
             <FieldError msg={errors.description} />
           </div>
           {/* Checkboxes */}
-          <div style={{ display: "flex", gap: 24, padding: "14px 0" }}>
-            <label style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 13, cursor: "pointer" }}>
+          <div className={styles.checkRow}>
+            <label className={styles.checkLabel}>
               <input
                 type="checkbox"
                 name="is_new"
                 checked={form.is_new}
                 onChange={handleChange}
-                style={{ width: 16, height: 16, accentColor: "var(--accent)" }}
+                className={styles.checkInput}
               />
               New Arrival
             </label>
-            <label style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 13, cursor: "pointer" }}>
+            <label className={styles.checkLabel}>
               <input
                 type="checkbox"
                 name="is_bestseller"
                 checked={form.is_bestseller}
                 onChange={handleChange}
-                style={{ width: 16, height: 16, accentColor: "var(--accent)" }}
+                className={styles.checkInput}
               />
               Bestseller
             </label>
           </div>
           {/* Actions */}
-          <div style={{ display: "flex", justifyContent: "flex-end", gap: 8, paddingTop: 8 }}>
+          <div className={styles.formActions}>
             <Button variant="outline" size="sm" onClick={onClose}>
               Cancel
             </Button>

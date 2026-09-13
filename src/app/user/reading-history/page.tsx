@@ -1,6 +1,6 @@
 import React from 'react';
 import { Star, AlertTriangle, TrendingUp, BookOpen } from 'lucide-react';
-import { READING_HISTORY, MONTHLY_READING, getBook } from '@/mock/portalData';
+import { READING_HISTORY, MONTHLY_READING, getBook } from '@/styles/mock/portalData';
 
 import Button from '@/components/ui/Button';
 import Card from '@/components/ui/Card';

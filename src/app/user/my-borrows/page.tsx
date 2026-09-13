@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { BookMarked, AlertTriangle } from 'lucide-react';
-import { LOANS } from '@/mock/portalData';
+import { LOANS } from '@/styles/mock/portalData';
 
 import BorrowCard from '@/components/features/BorrowCard';
 import Button from '@/components/ui/Button';

@@ -1,7 +1,7 @@
 
 import {  Flag, Check, X, Star } from 'lucide-react';
 
-import { ADMIN_REVIEWS, fmtDate } from '@/mock/adminData';
+import { ADMIN_REVIEWS, fmtDate } from '@/styles/mock/adminData';
 import Button from '@/components/ui/Button';
 import styles from "@/styles/admin-shared.module.css";
 import { AlertBar, FilterBar } from '@/components/features/reviews-filterbar';

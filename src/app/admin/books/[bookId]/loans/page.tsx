@@ -1,6 +1,6 @@
 import styles from "@/styles/admin-shared.module.css";
 
-import { fmtDate } from "@/mock/adminData";
+import { fmtDate } from "@/styles/mock/adminData";
 import { createClient } from "@/lib/server";
 
 interface Props {

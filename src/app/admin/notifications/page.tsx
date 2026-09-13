@@ -1,7 +1,7 @@
 import React from "react";
 import { Bell, Megaphone, Wrench, Clock } from "lucide-react";
 
-import { ADMIN_NOTIFICATIONS, MEMBERS, timeAgo } from "@/mock/adminData";
+import { ADMIN_NOTIFICATIONS, MEMBERS, timeAgo } from "@/styles/mock/adminData";
 
 import styles from "@/styles/admin-shared.module.css";
 import NotificationComposer from "@/components/features/admin-new-notification-compose";

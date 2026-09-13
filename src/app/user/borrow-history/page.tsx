@@ -1,6 +1,6 @@
 
 import { Search } from 'lucide-react';
-import { LOAN_HISTORY, getBook } from '@/mock/portalData';
+import { LOAN_HISTORY, getBook } from '@/styles/mock/portalData';
 
 import { BorrowHistoryRow } from '@/components/features/BorrowCard';
 

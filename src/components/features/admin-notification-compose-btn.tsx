@@ -3,7 +3,7 @@
 import { useState } from "react";
 
 import styles from "@/styles/admin-shared.module.css";
-import { MEMBERS } from "@/mock/adminData";
+import { MEMBERS } from "@/styles/mock/adminData";
 
 import { useRouter, useSearchParams, useParams } from "next/navigation";
 import Button from "@/components/ui/Button";

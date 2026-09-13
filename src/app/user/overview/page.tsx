@@ -2,7 +2,7 @@
 import {  BookMarked, CheckCircle, Clock, Award, Star } from 'lucide-react';
 import {
   LOANS, LOAN_HISTORY, ACHIEVEMENTS,MY_ACHIEVEMENTS, READING_HISTORY, USER_PROFILE, MONTHLY_READING, getBook, fmtDateShort,
-} from '@/mock/portalData';
+} from '@/styles/mock/portalData';
 
 import Button from '@/components/ui/Button';
 import Card from '@/components/ui/Card';

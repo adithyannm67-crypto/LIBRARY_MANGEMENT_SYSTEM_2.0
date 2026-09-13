@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { Heart, AlertTriangle, BookMarked, CalendarClock, Trash2 } from 'lucide-react';
-import { WISHLIST, getBook, fmtDateShort } from '@/mock/portalData';
+import { WISHLIST, getBook, fmtDateShort } from '@/styles/mock/portalData';
 
 import Button from '@/components/ui/Button';
 import Badge from '@/components/ui/Badge';

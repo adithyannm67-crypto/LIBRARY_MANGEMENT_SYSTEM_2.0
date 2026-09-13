@@ -17,12 +17,12 @@ import {
   CATEGORY_DIST,
   fmtDate,
   timeAgo,
-} from "@/mock/adminData";
+} from "@/styles/mock/adminData";
 
 import {
   MockBorrow as AdminLoan,
   MockReview as AdminReview,
-} from "@/mock/mock/types";
+} from "@/styles/mock/mock/types";
 import styles from "@/styles/admin-shared.module.css";
 
 export default function AdminDashboardPage() {

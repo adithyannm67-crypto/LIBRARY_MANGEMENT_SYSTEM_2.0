@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { Bell, AlertTriangle, CheckCheck } from 'lucide-react';
-import { NOTIFICATIONS } from '@/mock/portalData';
+import { NOTIFICATIONS } from '@/styles/mock/portalData';
 
 import { NotificationItem } from '@/components/features/NotificationItem';
 import Button from '@/components/ui/Button';

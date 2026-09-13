@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { CalendarClock, AlertTriangle, CheckCircle, Clock, XCircle } from 'lucide-react';
-import { RESERVATIONS, getBook, fmtDateShort } from '@/mock/portalData';
+import { RESERVATIONS, getBook, fmtDateShort } from '@/styles/mock/portalData';
 import Link from 'next/link';
 import Button from '@/components/ui/Button';
 import Badge from '@/components/ui/Badge';

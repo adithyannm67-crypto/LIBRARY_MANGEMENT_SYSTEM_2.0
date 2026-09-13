@@ -4,7 +4,7 @@ import Link from "next/link";
 
 import { BookMarked, Clock, CheckCircle, AlertTriangle, ArrowRight, } from "lucide-react";
 
-import { LOANS, NOTIFICATIONS, RESERVATIONS, BOOKS, MONTHLY_READING, getBook, daysUntil, fmtDateShort, } from "@/mock/portalData";
+import { LOANS, NOTIFICATIONS, RESERVATIONS, BOOKS, MONTHLY_READING, getBook, daysUntil, fmtDateShort, } from "@/styles/mock/portalData";
 
 import Card from "@/components/ui/Card";
 import Badge from "@/components/ui/Badge";

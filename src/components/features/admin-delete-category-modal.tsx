@@ -3,37 +3,44 @@
 import { useState } from "react";
 import { Trash2, X } from "lucide-react";
 import Button from "@/components/ui/Button";
-import type { Book } from "@/types/database";
 import { createClient } from "@/lib/client";
 import { cn } from "@/lib/utils";
 import styles from "@/styles/admin-modal.module.css";
 
-interface DeleteBookModalProps {
-  book: Book;
+import type { CategoryInput } from "@/components/features/admin-category-form-modal";
+
+interface DeleteCategoryModalProps {
+  category: CategoryInput;
   onClose: () => void;
   onDeleted: () => void;
 }
 
-export default function DeleteBookModal({ book, onClose, onDeleted }: DeleteBookModalProps) {
+export default function DeleteCategoryModal({
+  category,
+  onClose,
+  onDeleted,
+}: DeleteCategoryModalProps) {
   const [deleting, setDeleting] = useState(false);
 
   const handleDelete = async () => {
     setDeleting(true);
     try {
       const supabase = createClient();
-      const { error } = await supabase.rpc("delete_book", { p_book_id: book.book_id });
+      const { error } = await supabase.rpc("delete_category", {
+        p_category_id: category.id,
+      });
       if (error) throw error;
       onDeleted();
     } catch (err) {
-      console.error("Failed to delete book:", err);
-      alert("Failed to delete book.");
+      console.error("Failed to delete category:", err);
+      alert("Failed to delete category.");
       setDeleting(false);
     }
   };
 
   return (
     <div
-      className={cn(styles.overlay, styles.overlayCenter)}
+      className={cn(styles.overlay, styles.overlayScroll)}
       onClick={(e) => {
         if (e.target === e.currentTarget) onClose();
       }}
@@ -41,22 +48,32 @@ export default function DeleteBookModal({ book, onClose, onDeleted }: DeleteBook
       <div className={cn(styles.dialog, styles.dialogSm)}>
         {/* Header */}
         <div className={styles.header}>
-          <h2 className={styles.title}>Delete Book</h2>
+          <h2
+            className={styles.title}
+          >
+            Delete Category
+          </h2>
           <button onClick={onClose} className={styles.closeBtn}>
             <X size={14} />
           </button>
         </div>
 
         {/* Body */}
-        <div className={styles.body}>
+        <div
+          className={styles.body}
+        >
           <p className={styles.bodyText}>
-            Are you sure you want to delete <strong>&ldquo;{book.title}&rdquo;</strong>?
-            This removes the book and its physical copies from the library. This action cannot be undone.
+            Are you sure you want to delete <strong>&ldquo;{category.name}&rdquo;</strong>?
+            {category.bookCount > 0
+              ? " Its books stay in the catalog but are no longer grouped under this category."
+              : " This action cannot be undone."}
           </p>
         </div>
 
         {/* Actions */}
-        <div className={styles.dialogActions}>
+        <div
+          className={styles.dialogActions}
+        >
           <Button variant="outline" size="sm" onClick={onClose}>
             Cancel
           </Button>

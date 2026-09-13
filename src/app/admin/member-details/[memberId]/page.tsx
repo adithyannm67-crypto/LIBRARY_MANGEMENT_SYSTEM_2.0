@@ -6,7 +6,7 @@ import {
   AlertCircle,
 } from "lucide-react";
 import { AdminRoute } from "@/constants/admin-sidebar-constants";
-import { getMember, ALL_LOANS, fmtDate, timeAgo } from "@/mock/adminData";
+import { getMember, ALL_LOANS, fmtDate, timeAgo } from "@/styles/mock/adminData";
 import Button from "@/components/ui/Button";
 import styles from "@/styles/admin-shared.module.css";
 

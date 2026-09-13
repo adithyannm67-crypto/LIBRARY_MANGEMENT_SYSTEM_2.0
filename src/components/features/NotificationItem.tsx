@@ -1,7 +1,7 @@
 "use client";
 import React from 'react';
 import { AlertCircle, Clock, Bell, Package, CheckCircle, Info, X } from 'lucide-react';
-import { Notification, timeAgo } from '../../mock/portalData';
+import { Notification, timeAgo } from '../../styles/mock/portalData';
 import styles from './NotificationItem.module.css';
 
 const TYPE_CONFIG: Record<Notification['type'], { icon: React.ReactNode; color: string }> = {

@@ -1,4 +1,4 @@
-import { MockBook as AdminBook } from "@/mock/mock/types";
+import { MockBook as AdminBook } from "@/styles/mock/mock/types";
 
 import {
   AreaChartCard,
@@ -12,7 +12,7 @@ import {
   MEMBER_GROWTH,
   MEMBERS,
   ADMIN_BOOKS,
-} from "@/mock/adminData";
+} from "@/styles/mock/adminData";
 import styles from "@/styles/admin-shared.module.css";
 
 export default function AnalyticsPage() {

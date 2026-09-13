@@ -5,7 +5,7 @@ import { useSearchParams, useRouter } from "next/navigation";
 
 
 import { LayoutGrid, List } from "lucide-react";
-import { CATEGORIES } from "@/mock/portalData";
+import { CATEGORIES } from "@/styles/mock/portalData";
 
 import SearchBar from "@/components/ui/SearchBar2.0";
 

@@ -1,6 +1,6 @@
 import React from 'react';
 import { AlertCircle, Clock, RotateCcw, CheckCircle, ChevronRight } from 'lucide-react';
-import { Loan, getBook, daysUntil, fmtDate, fmtDateShort } from '../../mock/portalData';
+import { Loan, getBook, daysUntil, fmtDate, fmtDateShort } from '../../styles/mock/portalData';
 import Button from '../ui/Button';
 import Badge from '../ui/Badge';
 import styles from './BorrowCard.module.css';

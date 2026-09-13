@@ -1,6 +1,6 @@
 import { createClient } from "@/lib/server";
 import { AlertTriangle, RotateCcw } from "lucide-react";
-import { fmtDate } from "@/mock/adminData";
+import { fmtDate } from "@/styles/mock/adminData";
 import Button from "@/components/ui/Button";
 import styles from "@/styles/admin-shared.module.css";
 import Link from "next/link";

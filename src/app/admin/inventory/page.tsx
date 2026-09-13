@@ -5,7 +5,7 @@ import Button from '@/components/ui/Button';
 import styles from "@/styles/admin-shared.module.css";
 import Filterbar from '@/components/features/admin-filterBar';
 
-import { fmtDate } from '@/mock/adminData';
+import { fmtDate } from '@/styles/mock/adminData';
 
 interface Props {
   searchParams: Promise<{

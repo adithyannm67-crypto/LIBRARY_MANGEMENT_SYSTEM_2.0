@@ -1,5 +1,5 @@
 
-import { ALL_RESERVATIONS, fmtDate } from '@/mock/adminData';
+import { ALL_RESERVATIONS, fmtDate } from '@/styles/mock/adminData';
 import Button from '@/components/ui/Button';
 import styles from "@/styles/admin-shared.module.css";
 import FilterBar from '@/components/features/admin-filterBar';

@@ -5,6 +5,8 @@ import { Trash2, X } from "lucide-react";
 import Button from "@/components/ui/Button";
 import type { Author } from "@/types/database";
 import { createClient } from "@/lib/client";
+import { cn } from "@/lib/utils";
+import styles from "@/styles/admin-modal.module.css";
 
 interface DeleteAuthorModalProps {
   author: Author;
@@ -37,80 +39,29 @@ export default function DeleteAuthorModal({
 
   return (
     <div
-      style={{
-        position: "fixed",
-        inset: 0,
-        zIndex: 1000,
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        background: "rgba(0,0,0,0.5)",
-        backdropFilter: "blur(4px)",
-        animation: "fadeUp 150ms ease both",
-      }}
+      className={cn(styles.overlay, styles.overlayCenter)}
       onClick={(e) => {
         if (e.target === e.currentTarget) onClose();
       }}
     >
-      <div
-        style={{
-          background: "var(--card)",
-          border: "1px solid var(--border)",
-          borderRadius: 14,
-          width: "90%",
-          maxWidth: 420,
-          boxShadow: "0 20px 60px rgba(0,0,0,0.25)",
-        }}
-      >
+      <div className={cn(styles.dialog, styles.dialogSm)}>
         {/* Header */}
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            padding: "16px 20px",
-            borderBottom: "1px solid var(--border)",
-          }}
-        >
+        <div className={styles.header}>
           <h2
-            style={{
-              fontSize: 16,
-              fontWeight: 700,
-              margin: 0,
-              letterSpacing: "-0.02em",
-            }}
+            className={styles.title}
           >
             Delete Author
           </h2>
-          <button
-            onClick={onClose}
-            style={{
-              width: 30,
-              height: 30,
-              borderRadius: 8,
-              border: "none",
-              background: "var(--muted)",
-              cursor: "pointer",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              color: "var(--muted-foreground)",
-            }}
-          >
+          <button onClick={onClose} className={styles.closeBtn}>
             <X size={14} />
           </button>
         </div>
 
         {/* Body */}
         <div
-          style={{
-            padding: "20px",
-            fontSize: 14,
-            lineHeight: 1.6,
-            color: "var(--foreground)",
-          }}
+          className={styles.body}
         >
-          <p style={{ margin: 0 }}>
+          <p className={styles.bodyText}>
             Are you sure you want to delete <strong>&ldquo;{author.name}&rdquo;</strong>?
             {author.book_count > 0
               ? " This removes the author from the library and unlinks them from their books."
@@ -120,12 +71,7 @@ export default function DeleteAuthorModal({
 
         {/* Actions */}
         <div
-          style={{
-            display: "flex",
-            justifyContent: "flex-end",
-            gap: 8,
-            padding: "0 20px 20px",
-          }}
+          className={styles.dialogActions}
         >
           <Button variant="outline" size="sm" onClick={onClose}>
             Cancel
