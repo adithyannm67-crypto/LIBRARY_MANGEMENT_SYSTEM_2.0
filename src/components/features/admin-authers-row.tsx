@@ -1,19 +1,28 @@
 "use client";
 
 import { useState } from "react";
+import { Pencil, Trash2 } from "lucide-react";
 import styles from "@/styles/admin-shared.module.css";
 import Button from "@/components/ui/Button";
 
 import { Author } from "@/types/database";
 
-export default function AutherRow({ a }: { a: Author }) {
+export default function AutherRow({
+  a,
+  onEdit,
+  onDelete,
+}: {
+  a: Author;
+  onEdit: (author: Author) => void;
+  onDelete: (author: Author) => void;
+}) {
   const [expanded, setExpanded] = useState<string | null>(null);
   return (
     <>
       <tr
         className={styles.clickable}
         onClick={() => setExpanded(expanded === a.author_id ? null : a.author_id)}
-        style={{ background: expanded === a.author_id ? "var(--muted)" : undefined, }}
+        style={{ background: expanded === a.author_id ? "var(--muted)" : undefined }}
       >
         <td>
           <div
@@ -47,19 +56,37 @@ export default function AutherRow({ a }: { a: Author }) {
         <td style={{ fontWeight: 600 }}>{a.book_count}</td>
         <td>★ {a.rating.toFixed(1)}</td>
         <td>
-          <Button
-            variant="ghost"
-            size="xs"
-            onClick={(e) => e.stopPropagation()}
-          >
-            Edit
-          </Button>
+          <div style={{ display: "flex", gap: 4 }}>
+            <Button
+              variant="ghost"
+              size="xs"
+              leadingIcon={<Pencil size={11} />}
+              onClick={(e) => {
+                e.stopPropagation();
+                onEdit(a);
+              }}
+            >
+              Edit
+            </Button>
+            <Button
+              variant="ghost"
+              size="xs"
+              leadingIcon={<Trash2 size={11} />}
+              style={{ color: "var(--destructive)" }}
+              onClick={(e) => {
+                e.stopPropagation();
+                onDelete(a);
+              }}
+            >
+              Delete
+            </Button>
+          </div>
         </td>
       </tr>
       {expanded === a.author_id && (
         <tr>
           <td
-            colSpan={6}
+            colSpan={5}
             style={{
               padding: "0 14px 14px 56px",
               fontSize: 13,
