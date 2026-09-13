@@ -1,6 +1,7 @@
 export interface Book {
   book_id: string;
   title: string;
+  authors: { name: string, author_id: string }[];
   author: string;
   isbn: string;
   category: string;
@@ -17,6 +18,7 @@ export interface Book {
   tags: string;
   is_new: boolean;
   is_bestseller: boolean;
+  coverColor: string;
 }
 
 

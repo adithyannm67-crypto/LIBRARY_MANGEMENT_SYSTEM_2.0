@@ -13,9 +13,7 @@ export default function AutherRow({ a }: { a: Author }) {
       <tr
         className={styles.clickable}
         onClick={() => setExpanded(expanded === a.author_id ? null : a.author_id)}
-        style={{
-          background: expanded === a.author_id ? "var(--muted)" : undefined,
-        }}
+        style={{ background: expanded === a.author_id ? "var(--muted)" : undefined, }}
       >
         <td>
           <div
@@ -47,7 +45,6 @@ export default function AutherRow({ a }: { a: Author }) {
         </td>
         <td style={{ color: "var(--muted-foreground)" }}>{a.nationality}</td>
         <td style={{ fontWeight: 600 }}>{a.book_count}</td>
-        {/* <td style={{ fontWeight: 600 }}>{a.borrow_count.toLocaleString()}</td> */}
         <td>★ {a.rating.toFixed(1)}</td>
         <td>
           <Button
@@ -72,7 +69,7 @@ export default function AutherRow({ a }: { a: Author }) {
               background: "var(--muted)",
             }}
           >
-            {a.bio}
+            {a?.bio}
           </td>
         </tr>
       )}

@@ -1,5 +1,5 @@
 -- Seed authors table with initial data
-INSERT INTO authors (id, name, nationality, bookCount, borrowCount, rating, bio)
+INSERT INTO authors (author_id, name, nationality, book_count, borrow_count, rating, bio)
 VALUES
   ('au1', 'Robert C. Martin', 'American', 2, 230, 4.55, 'Software engineer known as "Uncle Bob". Author of Clean Code and The Clean Coder. Advocate for software craftsmanship.'),
   ('au2', 'Martin Fowler', 'British', 1, 72, 4.70, 'Chief Scientist at ThoughtWorks. Author of Refactoring and Patterns of Enterprise Application Architecture.'),

@@ -1,19 +1,20 @@
-"use client";
 
-import { useState } from "react";
-import styles from "@/styles/admin-shared.module.css";
-import Button from "@/components/ui/Button";
-import { useRouter } from "next/navigation";
+
 import type { Book } from "@/types/database";
+import RowActions from "./admin-book-row-actions";
 
-export default function BookRow({ b }: { b: Book }) {
-  const router = useRouter();
+export default function BookRow({
+  b,
+  onEdit,
+  onDelete,
+}: {
+  b: Book;
+  onEdit: (book: Book) => void;
+  onDelete: (book: Book) => void;
+}) {
+  
   return (
-    <tr
-      key={b.book_id}
-      className={styles.clickable}
-      onClick={() => router.push(`/admin/book-details/${b.book_id}`)}
-    >
+    <tr key={b.book_id} >
       <td>
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
           <div
@@ -38,14 +39,7 @@ export default function BookRow({ b }: { b: Book }) {
             >
               {b.title}
             </div>
-            <div
-              style={{
-                fontSize: 11,
-                color: "var(--muted-foreground)",
-              }}
-            >
-              {b.author}
-            </div>
+            <div style={{ fontSize: 11, color: "var(--muted-foreground)", }} > {b.author} </div>
           </div>
         </div>
       </td>
@@ -67,16 +61,7 @@ export default function BookRow({ b }: { b: Book }) {
       </td>
       <td>★ {b.rating.toFixed(1)}</td>
       <td>
-        <Button
-          variant="ghost"
-          size="xs"
-          onClick={(e) => {
-            e.stopPropagation();
-            router.push(`/admin/book-details/${b.book_id}`);
-          }}
-        >
-          View
-        </Button>
+        <RowActions b={b} onEdit={onEdit} onDelete={onDelete} />
       </td>
     </tr>
   );

@@ -10,7 +10,7 @@ const TabPanel = ({ bookId }: { bookId: string }) => {
     <div className={styles.tabs}>
       {(["info", "inventory", "loans"] as const).map((t) => (
         <Link
-          href={`/admin/book-details/${bookId}/${t}`}
+          href={`/admin/books/${bookId}/${t}`}
           key={t}
           className={`${styles.tab} ${tab === t ? styles.activeTab : ""}`}
           onClick={() => setTab(t)}

@@ -5,7 +5,7 @@ import styles from "@/app/admin/AdminLayout.module.css";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 
-import { NAV, NavItem } from "@/constants/admin-sidebar-constants";
+import { NAV, NavItem, adminNavHref } from "@/constants/admin-sidebar-constants";
 import { useAdminContext } from "@/context/adminContext";
 
 export default function SideBar() {
@@ -54,44 +54,17 @@ export default function SideBar() {
 
 interface LinkComponentProps {
   item: NavItem;
-  collapsed: Boolean;
+  collapsed: boolean;
 }
 
 const LinkComponent = ({ item, collapsed }: LinkComponentProps) => {
   const pathName = usePathname();
   const isActive = pathName.includes(item.id);
   const Icon = item.icon;
-  let extraUrl = "";
-  switch (item.id) {
-    case "borrows":
-      extraUrl = "?filter=All";
-      break;
-    case "authors":
-      extraUrl = "?sort=rating";
-      break;
-    case "books":
-      extraUrl = "?cat=All&filter=All&sort=borrows";
-      break;
-    case "inventory":
-      extraUrl = "?filter=All&cond=All";
-      break;
-    case "members":
-      extraUrl = "?filter=All&tier=All";
-      break;
-    case "notifications":
-      extraUrl = "?composing=false";
-      break;
-    case "reservations":
-      extraUrl = "?filter=All";
-      break;
-    case "reviews":
-      extraUrl = "?filter=all";
-      break;
-  }
 
   return (
     <Link
-      href={`/admin/${item.id}${extraUrl}`}
+      href={adminNavHref(item)}
       className={`${styles.navItem} ${isActive ? styles.active : ""}`}
       title={collapsed ? item.label : undefined}
     >

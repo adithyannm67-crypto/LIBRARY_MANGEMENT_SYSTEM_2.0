@@ -1,12 +1,9 @@
 
-import { Plus } from "lucide-react";
-
-import { ADMIN_CATEGORIES } from "@/mock/adminData";
-import Button from "@/components/ui/Button";
 import styles from "@/styles/admin-shared.module.css";
 
 import Filterbar from "@/components/features/admin-filterBar";
-import BookRow from "@/components/features/admin-books-row";
+import BooksTable from "@/components/features/admin-books-table";
+import AddBookButton from "@/components/features/admin-add-book-button";
 import { createClient } from '@/lib/server'
 import type { Book } from '@/types/database'
 
@@ -16,29 +13,32 @@ interface Props {
     q?: string;
     sort?: string;
     cat?: string;
-    filter?: string;
   }>;
 }
-
 export default async function AdminBooksPage({ searchParams }: Props) {
   
    const supabase = await createClient()
  
-  // Fetch rows from a table
-  const { data, error } = await supabase
-    .from('books')
-    .select('*')
-    .returns<Book[]>()
+ const { data, error } = await supabase
+  .from('books_with_authors')
+  .select('*').returns<Book[]>()
  
   if (error) console.error(error)
- 
-  console.log(data)
-  const params = await searchParams;
-  const { q, sort, cat, filter } = params;
-  const query = q ?? "";
-  const status = filter;
 
-  const cats = ["All", ...ADMIN_CATEGORIES.map((c) => c.name)];
+  console.log(JSON.stringify(data, null, 2))
+
+  const { data: categories } = await supabase
+    .from("categories")
+    .select("name")
+    .order("name");
+
+ 
+
+  const params = await searchParams;
+  const { q, sort, cat } = params;
+  const query = q ?? "";
+
+  const cats = ["All", ...(categories??[])?.map((c) => c.name)];
 
   const books: Book[] = data ?? [];
 
@@ -69,51 +69,14 @@ export default async function AdminBooksPage({ searchParams }: Props) {
           </p>
         </div>
         <div className={styles.pageActions}>
-          <Button variant="primary" size="sm" leadingIcon={<Plus size={14} />}>
-            Add Book
-          </Button>
+          <AddBookButton books={books} />
         </div>
       </div>
 
       <Filterbar cats={cats} />
 
       <div className={styles.section}>
-        <div className={styles.tableWrap}>
-          <table className={styles.table}>
-            <thead>
-              <tr>
-                {[
-                  "Book",
-                  "ISBN",
-                  "Category",
-                  "Copies",
-                  "Rating",
-                  "",
-                ].map((h) => (
-                  <th key={h}>{h}</th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {filtered.map((b) => (
-                <BookRow key={b.book_id} b={b} />
-              ))}
-            </tbody>
-          </table>
-          {filtered.length === 0 && (
-            <p
-              style={{
-                textAlign: "center",
-                padding: "32px",
-                fontSize: 13,
-                color: "var(--muted-foreground)",
-                margin: 0,
-              }}
-            >
-              No books match your filters.
-            </p>
-          )}
-        </div>
+        <BooksTable books={filtered} />
       </div>
     </div>
   );

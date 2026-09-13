@@ -1,28 +1,36 @@
-
-
 import React from "react";
 import { AlertTriangle, ChevronLeft } from "lucide-react";
 
-import { getAdminBook } from "@/mock/adminData";
 import Button from "@/components/ui/Button";
 import styles from "@/styles/admin-shared.module.css";
 
-import Link from "next/link";
-import TabPanel from "@/components/layout/admin-book-deatils-tabs";import { MockBook as AdminBook } from "@/mock/mock/types";
+
+import TabPanel from "@/components/layout/admin-book-deatils-tabs";
+import BookDetailsActions from "@/components/features/admin-book-details-actions";
+
+import { createClient } from "@/lib/server";
+import { getCategoryForBook } from "@/utils/dbUtils";
+import type { Book } from "@/types/database";
 
 interface Props {
-  params: { bookId: string };
+  params: Promise<{ bookId: string }>;
   children: React.ReactNode;
 }
-export default function AdminBookDetailsPage({ params, children }: Props) {
-  const bookId = params.bookId;
-  const book = getAdminBook(bookId);
 
-  const QUICK_STATS = ({ book }: { book: AdminBook }) => {
-    return [
-      { l: "Pages", v: book.pages },
-    ];
-  };
+export default async function AdminBookDetailsLayout({
+  params,
+  children,
+}: Props) {
+  const { bookId } = await params;
+
+  const supabase = await createClient();
+  const { data: book, error } = await supabase
+    .from("books_with_authors")
+    .select("*")
+    .eq("book_id", bookId)
+    .single<Book>();
+
+  if (error) console.error(error);
 
   if (!book)
     return (
@@ -34,19 +42,16 @@ export default function AdminBookDetailsPage({ params, children }: Props) {
       </div>
     );
 
+  const category = await getCategoryForBook(book);
+
   return (
     <div className={styles.page}>
       <div className={styles.pageHeader}>
-        <Link href="/admin/books" className={styles.backBtn}>
-          <ChevronLeft size={15} /> Books
-        </Link>
+        <Button isBackButton className={styles.backBtn}>
+          <ChevronLeft size={15} /> Back
+        </Button>
         <div className={styles.pageActions}>
-          <Button variant="outline" size="sm">
-            Edit
-          </Button>
-          <Button variant="destructive" size="sm">
-            Remove
-          </Button>
+          <BookDetailsActions book={book} />
         </div>
       </div>
 
@@ -59,7 +64,7 @@ export default function AdminBookDetailsPage({ params, children }: Props) {
                 width: 80,
                 height: 110,
                 borderRadius: 8,
-                background: book.coverColor,
+                background: book.coverColor || "#cc76b3",
                 flexShrink: 0,
                 boxShadow:
                   "inset -3px 0 8px rgba(0,0,0,0.2), 4px 4px 16px rgba(0,0,0,0.12)",
@@ -87,7 +92,7 @@ export default function AdminBookDetailsPage({ params, children }: Props) {
               </p>
               <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
                 <span className={`${styles.badge} ${styles.badgeAccent}`}>
-                  {typeof book.category === "string" ? book.category : book.category.name}
+                  {category?.name ?? book.category}
                 </span>
                 <span
                   className={`${styles.badge} ${styles.badgeNeutral}`}
@@ -96,7 +101,11 @@ export default function AdminBookDetailsPage({ params, children }: Props) {
                   {book.isbn}
                 </span>
                 <span
-                  className={`${styles.badge} ${book.available_copies > 0 ? styles.badgeActive : styles.badgeWarning}`}
+                  className={`${styles.badge} ${
+                    book.available_copies > 0
+                      ? styles.badgeActive
+                      : styles.badgeWarning
+                  }`}
                 >
                   {book.available_copies}/{book.total_copies} available
                 </span>
@@ -105,12 +114,40 @@ export default function AdminBookDetailsPage({ params, children }: Props) {
                 </span>
               </div>
             </div>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, alignSelf: "flex-start", }} >
-              {QUICK_STATS({ book }).map((s) => (
-                <div key={s.l} 
-                  style={{ textAlign: "center", padding: "12px 14px", background: "var(--muted)", borderRadius: 8, }} >
-                  <div style={{ fontSize: 18, fontWeight: 800, letterSpacing: "-0.03em", }} > {s.v} </div>
-                  <div style={{ fontSize: 11, color: "var(--muted-foreground)" }} > {s.l} </div>
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "1fr 1fr",
+                gap: 10,
+                alignSelf: "flex-start",
+              }}
+            >
+              {[
+                { l: "Pages", v: book.pages },
+              ].map((s) => (
+                <div
+                  key={s.l}
+                  style={{
+                    textAlign: "center",
+                    padding: "12px 14px",
+                    background: "var(--muted)",
+                    borderRadius: 8,
+                  }}
+                >
+                  <div
+                    style={{
+                      fontSize: 18,
+                      fontWeight: 800,
+                      letterSpacing: "-0.03em",
+                    }}
+                  >
+                    {s.v}
+                  </div>
+                  <div
+                    style={{ fontSize: 11, color: "var(--muted-foreground)" }}
+                  >
+                    {s.l}
+                  </div>
                 </div>
               ))}
             </div>
