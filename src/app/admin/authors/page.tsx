@@ -4,7 +4,7 @@ import PageProvider from "@/context/admin-authers-page-context";
 import AuthersTable from "@/components/features/admin-authers-table";
 import FilterBar from "@/components/features/admin-filterBar";
 import AddAuthorButton from "@/components/features/admin-add-author-button";
-
+import AutherRow from "@/components/features/admin-authers-row";
 import { createClient } from "@/lib/server";
 import type { Author } from "@/types/database";
 
