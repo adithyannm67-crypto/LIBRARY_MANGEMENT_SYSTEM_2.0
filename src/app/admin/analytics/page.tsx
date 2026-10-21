@@ -16,6 +16,7 @@ import {
 import styles from "@/styles/admin-shared.module.css";
 
 export default function AnalyticsPage() {
+ throw new Error("Not implimented") 
   const topBook = [...ADMIN_BOOKS].sort(
     (a, b) => b.totalBorrows - a.totalBorrows,
   )[0];
